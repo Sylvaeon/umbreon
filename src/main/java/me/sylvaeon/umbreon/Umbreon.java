@@ -20,6 +20,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.managers.Presence;
 import org.json.simple.JSONObject;
@@ -37,11 +38,11 @@ public class Umbreon extends ListenerAdapter {
     public static AudioPlayerManager playerManager;
     public static Map<Long, GuildMusicManager> musicManagers;
     public static Member CYNTHIA, UMBREON;
-    public static boolean loaded = false;
 	public static Guild guild;
 	public static Thread pulseThread;
 	public static boolean pulse = true;
 	public static boolean endPulse = false;
+	public static Map<User, TextChannel> privateChannels;
 
     public static void main(String[] args) throws LoginException, InterruptedException {
 
@@ -54,7 +55,7 @@ public class Umbreon extends ListenerAdapter {
         UMBREON = guild.getMemberById(442819433547825152L);
 
         musicManagers = new HashMap<>();
-
+		privateChannels = new HashMap<>();
         playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
         AudioSourceManagers.registerLocalSource(playerManager);
@@ -95,7 +96,6 @@ public class Umbreon extends ListenerAdapter {
         };
         pulseThread.start();
         System.out.println("Thread 2 Initialized");
-        loaded = true;
     }
 
 	public synchronized static void quit() {
@@ -110,7 +110,7 @@ public class Umbreon extends ListenerAdapter {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		Umbreon.jda.shutdownNow();
+		Umbreon.jda.shutdown();
 	}
 	
     public static synchronized GuildMusicManager getGuildAudioPlayer() {
@@ -129,46 +129,74 @@ public class Umbreon extends ListenerAdapter {
 
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        String message = event.getMessage().getContentRaw();
-        Member member = event.getMember();
-        TextChannel textChannel = event.getChannel();
-        if (loaded && !event.getAuthor().isBot()) {
-            if (message.startsWith("$")) {
-                message = message.substring(1);
-                String[] split = message.split(" ");
-                Command command = Commands.getCommand(split[0]);
-                if (command != null) {
-                    if (!command.requiresAdmin() || member.hasPermission(Permission.ADMINISTRATOR)) {
-                    	if(!(command instanceof CommandRPG) || (textChannel.getName().equalsIgnoreCase("rpg") || textChannel.getName().equalsIgnoreCase("dev"))) {
-							String[] args = new String[split.length - 1];
-							if (args.length != 0) {
-								for (int i = 1; i < split.length; i++) {
-									args[i - 1] = split[i];
-								}
-							}
-							command.onCall(args, member, textChannel);
-						} else {
-							textChannel.sendMessage("Please use #rpg for rpg commands!").queue();
-						}
-                    } else {
-                        event.getChannel().sendMessage("Error: Invalid permissions").queue();
-                    }
-                } else {
-                    event.getChannel().sendMessage("Error: Not a valid command! Type $help for a list of commands").queue();
-                }
-            }
-            if (message.toLowerCase().contains("sylvan")) {
-                PrivateChannel pc = event.getAuthor().openPrivateChannel().complete();
-                pc.sendMessage("Please remember the information in #announcements ty <3\n~Cynthia").queue();
-                event.getMessage().delete().complete();
-            }
-        }
+        processMessage(event.getMessage());
     }
+
+	@Override
+	public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+		processMessage(event.getMessage());
+	}
+
+	private void processMessage(Message message) {
+    	String messageString = message.getContentRaw();
+    	TextChannel textChannel = message.getTextChannel();
+    	User user = message.getAuthor();
+    	Member member = message.getMember();
+    	if(member == null) {
+    		member = guild.getMember(user);
+		}
+    	Player player = Players.getPlayer(member);
+		if (!member.getUser().isBot()) {
+			if (messageString.startsWith("$")) {
+				messageString = messageString.substring(1);
+				String[] split = messageString.split(" ");
+				Command command = Commands.getCommand(split[0]);
+				if (command != null) {
+					if (!command.requiresAdmin() || member.hasPermission(Permission.ADMINISTRATOR)) {
+						String[] args = new String[split.length - 1];
+						if (args.length != 0) {
+							for (int i = 1; i < split.length; i++) {
+								args[i - 1] = split[i];
+							}
+						}
+						command.onCall(args, member, textChannel);
+					} else {
+						textChannel.sendMessage("Error: Invalid permissions").queue();
+					}
+				} else {
+					textChannel.sendMessage("Error: Not a valid command! Type $help for a list of commands").queue();
+				}
+				try {
+					message.delete().complete();
+				} catch (Exception e) {
+
+				}
+			}
+			if (messageString.toLowerCase().contains("sylvan")) {
+				PrivateChannel pc = member.getUser().openPrivateChannel().complete();
+				pc.sendMessage("Please remember the information in #announcements ty <3\n~Cynthia").queue();
+				message.delete().complete();
+			}
+		}
+	}
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
         Member member = event.getMember();
         Players.initPlayer(member);
     }
-    
+
+    public static boolean addPrivateChannel(User user) {
+    	String name = "rpg-" + user.getId();
+    	if(guild.getTextChannelsByName(name, true).isEmpty()) {
+			guild.getController().createTextChannel(name).complete();
+			TextChannel textChannel = guild.getTextChannelsByName(name, true).get(0);
+			textChannel.createPermissionOverride(guild.getPublicRole()).setDeny(Permission.MESSAGE_READ, Permission.VIEW_CHANNEL).complete();
+			textChannel.createPermissionOverride(guild.getMember(user)).setAllow(Permission.MESSAGE_READ, Permission.VIEW_CHANNEL).complete();
+			return true;
+		} else {
+    		return false;
+		}
+	}
+
 }

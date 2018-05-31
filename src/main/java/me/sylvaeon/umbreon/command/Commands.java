@@ -40,6 +40,7 @@ public final class Commands {
 		addCommand("inventory", new CommandRPGInventory(), "View your inventory", "inv");
 		addCommand("craft", new CommandRPGCraft(), "Basic crafting", "crafting");
 		addCommand("give", new CommandRPGGive(), "Gives (cheats) an item");
+		addCommand("private-room", new CommandCreatePrivateRoom(), "Creates a private room");
 	}
 
 	public static Command getCommand(String name) {
