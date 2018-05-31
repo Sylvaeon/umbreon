@@ -1,4 +1,4 @@
-package me.sylvaeon.umbreon.rpg.command.action.crafting;
+package me.sylvaeon.umbreon.rpg.command.action;
 
 import me.sylvaeon.umbreon.rpg.command.CommandRPG;
 import me.sylvaeon.umbreon.rpg.crafting.Recipe;
@@ -9,11 +9,11 @@ import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.List;
 
-public class CommandRPGCarpenter extends CommandRPG {
+public class CommandRPGCraft extends CommandRPG {
 	@Override
 	public void onCall(String[] args, Member member, TextChannel textChannel) {
 		Player player = Players.getPlayer(member);
-		List<Recipe> recipeList = player.getAvailableCarpentryRecipes();
+		List<Recipe> recipeList = player.getAvailableRecipes();
 		if(args.length == 0) {
 			String string;
 			if(recipeList.isEmpty()) {
@@ -33,7 +33,7 @@ public class CommandRPGCarpenter extends CommandRPG {
 					textChannel.sendMessage("Not a valid number!").queue();
 				} else {
 					Recipe recipe = recipeList.get(index - 1);
-					player.carpenter(recipe, textChannel);
+					player.craft(recipe, textChannel);
 				}
 			} catch (NumberFormatException e) {
 				textChannel.sendMessage("Not a valid number!");

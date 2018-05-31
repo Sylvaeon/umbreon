@@ -20,7 +20,7 @@ public class CommandRPGGive extends CommandRPG {
 			Item item = Items.getItem(itemName);
 			int amount = Integer.parseUnsignedInt(amountName);
 			Player player = Players.getPlayer(member);
-			player.addItem(item, amount);
+			player.getInventory().addItem(item, amount);
 		} catch (Exception e) {
 		}
 	}

@@ -15,18 +15,9 @@ public class CommandRPGXp extends CommandRPG {
 	public void onCall(String[] args, Member member, TextChannel textChannel) {
 		Player player = Players.getPlayer(member);
 		String msg = "";
-		msg += "Current Level: " + (player.getLvl() + round( (double) player.getXp() / player.getXpNeeded(), 2)) + "\n";
-		msg += "\n---Combat Skills---\n";
-		for(SkillType skillType : SkillType.getCombatSkillTypes()) {
-			msg += StringHelper.formatEnum(skillType) + " Level: " + (player.getLvl(skillType) + round( (double) player.getXp(skillType) / player.getXpNeeded(skillType), 2)) + "\n";
-		}
-		msg += "\n---Gathering Skills---\n";
-		for(SkillType skillType : SkillType.getGatheringSkillTypes()) {
-			msg += StringHelper.formatEnum(skillType) + " Level: " + (player.getLvl(skillType) + round( (double) player.getXp(skillType) / player.getXpNeeded(skillType), 2)) + "\n";
-		}
-		msg += "\n---Crafting Skills---\n";
-		for(SkillType skillType : SkillType.getCraftingSkillTypes()) {
-			msg += StringHelper.formatEnum(skillType) + " Level: " + (player.getLvl(skillType) + round( (double) player.getXp(skillType) / player.getXpNeeded(skillType), 2)) + "\n";
+		msg += "Character Level: " + (player.getLvl() + round( (double) player.getXp() / player.getXpNeeded(), 2)) + "\n";
+		for(SkillType skillType : SkillType.values()) {
+			msg += StringHelper.formatEnum(skillType) + " Level: " + (player.getSkillSet().getSkill(skillType).getLvl() + round( (double) player.getSkillSet().getSkill(skillType).getXp() / player.getSkillSet().getSkill(skillType).getXpNeeded(), 2)) + "\n";
 		}
 		textChannel.sendMessage(msg).queue();
 	}

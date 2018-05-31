@@ -1,19 +1,19 @@
-package me.sylvaeon.umbreon.rpg.item.loot;
+package me.sylvaeon.umbreon.rpg.item.drop;
 
 import me.sylvaeon.umbreon.helper.MathHelper;
 
 import java.util.concurrent.ThreadLocalRandom;
 
-public class LootAmount {
+public class DropAmount {
     double chance;
     int min, max;
-    public LootAmount(double chance) {
+    public DropAmount(double chance) {
         this.chance = chance;
         this.min = -1;
         this.max = -1;
     }
 
-    public LootAmount(int min, int max) {
+    public DropAmount(int min, int max) {
         this.chance = -1;
         this.min = min;
         this.max = max;
@@ -24,7 +24,7 @@ public class LootAmount {
             return ThreadLocalRandom.current().nextInt(min, max + 1);
         } else {
         	int base = (int) Math.floor(chance);
-            return base + (MathHelper.intervalChance((double) chance - base) ? 1 : 0);
+            return base + (MathHelper.intervalChance(chance - base) ? 1 : 0);
         }
     }
 }

@@ -2,7 +2,6 @@ package me.sylvaeon.umbreon.helper;
 
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
-import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillType;
 
 import java.util.List;
 

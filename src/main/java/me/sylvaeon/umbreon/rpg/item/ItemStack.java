@@ -55,4 +55,12 @@ public class ItemStack implements Comparable<ItemStack> {
 	public void setAmount(int amount) {
 		this.amount = amount;
 	}
+
+	public boolean empty() {
+		if(getAmount() <= 0) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 }

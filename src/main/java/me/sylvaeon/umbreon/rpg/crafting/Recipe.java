@@ -1,29 +1,18 @@
 package me.sylvaeon.umbreon.rpg.crafting;
 
 import me.sylvaeon.umbreon.rpg.item.ItemStack;
-import me.sylvaeon.umbreon.rpg.item.tool.Tool;
 
 import java.util.List;
 
 public class Recipe {
-	Tool tool;
 	List<ItemStack> outputs;
 	List<ItemStack> inputs;
-
-	public Recipe(Tool tool, List<ItemStack> outputs, List<ItemStack> inputs) {
-		this.tool = tool;
-		this.outputs = outputs;
-		this.inputs = inputs;
-	}
 
 	public Recipe(List<ItemStack> outputs, List<ItemStack> inputs) {
 		this.outputs = outputs;
 		this.inputs = inputs;
 	}
 
-	public Tool getTool() {
-		return tool;
-	}
 
 	public List<ItemStack> getOutputs() {
 		return outputs;

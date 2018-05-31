@@ -8,7 +8,6 @@ import me.sylvaeon.umbreon.command.Commands;
 import me.sylvaeon.umbreon.helper.ColorHelper;
 import me.sylvaeon.umbreon.music.GuildMusicManager;
 import me.sylvaeon.umbreon.rpg.command.CommandRPG;
-import me.sylvaeon.umbreon.rpg.crafting.Recipe;
 import me.sylvaeon.umbreon.rpg.crafting.Recipes;
 import me.sylvaeon.umbreon.rpg.entity.enemy.Enemies;
 import me.sylvaeon.umbreon.rpg.entity.player.Player;
@@ -31,14 +30,12 @@ import javax.security.auth.login.LoginException;
 import java.awt.*;
 import java.io.*;
 import java.util.*;
-import java.util.List;
 
 public class Umbreon extends ListenerAdapter {
     private static final String TOKEN = "NDQyODE5NDMzNTQ3ODI1MTUy.DdI0wg.k76KQG6xTf2Q22NdAW5_7_zU-oY";
     public static JDA jda;
     public static AudioPlayerManager playerManager;
     public static Map<Long, GuildMusicManager> musicManagers;
-	public static Map<TextChannel, Long> lastLoadedMessageID;
     public static Member CYNTHIA, UMBREON;
     public static boolean loaded = false;
 	public static Guild guild;
@@ -52,7 +49,6 @@ public class Umbreon extends ListenerAdapter {
         jda.addEventListener(new Umbreon());
         Presence presence = jda.getPresence();
         presence.setGame(Game.playing("🖤Love You💛"));
-		lastLoadedMessageID = new HashMap<>();
         guild = jda.getGuildById("310572543767478272");
         CYNTHIA = guild.getMemberById(199523552850870272L);
         UMBREON = guild.getMemberById(442819433547825152L);
@@ -68,37 +64,7 @@ public class Umbreon extends ListenerAdapter {
 		Recipes.init();
 		Players.init();
 		Commands.init();
-
-		//Message Data
-        initMessageData();
-        loadMessageData();
-		textChannel_loop:
-        for (TextChannel textChannel : guild.getTextChannels()) {
-			long lastID = lastLoadedMessageID.get(textChannel);
-			message_loop:
-            for (Message message : textChannel.getIterableHistory()) {
-				Member member = message.getMember();
-				try {
-					member.getUser();
-					Players.getPlayer(member).getLvl();
-				} catch (NullPointerException e) {
-					continue message_loop;
-				}
-				if (!member.getUser().isBot()) {
-					if (lastID != -1L && message.getIdLong() <= lastID) {
-						lastLoadedMessageID.put(textChannel, textChannel.getLatestMessageIdLong());
-						continue textChannel_loop;
-					} else {
-						Players.getPlayer(member).addXp(1);
-					}
-				}
-			}
-			lastLoadedMessageID.put(textChannel, textChannel.getLatestMessageIdLong());
-        }
         Players.updatePeople();
-        
-        saveMessageData();
-        System.out.println("Done adding xp");
 
         pulseThread = new Thread() {
             @Override
@@ -132,44 +98,7 @@ public class Umbreon extends ListenerAdapter {
         loaded = true;
     }
 
-    private static void initMessageData() {
-		for(TextChannel textChannel : guild.getTextChannels()) {
-			lastLoadedMessageID.put(textChannel, -1L);
-		}
-	}
-    
-    private static void loadMessageData() {
-		File file = new File("src/main/resources/messages.json");
-		JSONParser parser = new JSONParser();
-		try {
-			Object obj = parser.parse(new FileReader(file));
-			JSONObject jsonObject = (JSONObject) obj;
-			for (Iterator iterator = jsonObject.keySet().iterator(); iterator.hasNext(); ) {
-				String key = (String) iterator.next();
-				long value = (long) jsonObject.get(key);
-				lastLoadedMessageID.put(guild.getTextChannelById(key), value);
-			}
-		} catch (IOException | ParseException | NullPointerException e) {
-
-		}
-	}
-	
-    private static void saveMessageData() {
-    	File file = new File("src/main/resources/messages.json");
-		JSONObject jsonObject = new JSONObject();
-		for(Map.Entry<TextChannel, Long> entry : lastLoadedMessageID.entrySet()) {
-			jsonObject.put(entry.getKey().getId(), entry.getValue());
-		}
-		try(FileWriter writer = new FileWriter(file)) {
-			writer.write(jsonObject.toJSONString());
-			writer.flush();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
 	public synchronized static void quit() {
-		saveMessageData();
 		Players.close();
 		pulse = false;
 		endPulse = true;
@@ -201,13 +130,9 @@ public class Umbreon extends ListenerAdapter {
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
         String message = event.getMessage().getContentRaw();
-        long ID = event.getMessage().getIdLong();
         Member member = event.getMember();
         TextChannel textChannel = event.getChannel();
-        lastLoadedMessageID.put(textChannel, ID);
         if (loaded && !event.getAuthor().isBot()) {
-        	Player player = Players.getPlayer(member);
-            player.addXp(textChannel, 1);
             if (message.startsWith("$")) {
                 message = message.substring(1);
                 String[] split = message.split(" ");

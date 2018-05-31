@@ -1,11 +1,11 @@
 package me.sylvaeon.umbreon.rpg.entity.enemy;
 
 import me.sylvaeon.umbreon.rpg.entity.Entity;
-import me.sylvaeon.umbreon.rpg.item.loot.LootDrop;
-import me.sylvaeon.umbreon.rpg.item.loot.LootTable;
+import me.sylvaeon.umbreon.rpg.item.drop.ItemDrop;
+import me.sylvaeon.umbreon.rpg.item.drop.DropTable;
 
 public abstract class Enemy extends Entity {
-    private LootTable loot;
+    private DropTable loot;
     private String name;
     
     private int xpMin, xpMax;
@@ -13,10 +13,10 @@ public abstract class Enemy extends Entity {
     public Enemy(String name) {
         super();
         this.name = name;
-        this.loot = new LootTable();
+        this.loot = new DropTable();
     }
 
-    public Enemy(String name, int xpMin, int xpMax, LootTable lootTable) {
+    public Enemy(String name, int xpMin, int xpMax, DropTable lootTable) {
 		super();
 		this.name = name;
 		this.loot = lootTable;
@@ -24,10 +24,10 @@ public abstract class Enemy extends Entity {
 		this.xpMax = xpMax;
 	}
 	
-	public Enemy(String name, int xpMin, int xpMax, LootDrop... drops) {
+	public Enemy(String name, int xpMin, int xpMax, ItemDrop... drops) {
 		super();
 		this.name = name;
-		this.loot = new LootTable(drops);
+		this.loot = new DropTable(drops);
 		this.xpMin = xpMin;
 		this.xpMax = xpMax;
 	}
@@ -37,7 +37,7 @@ public abstract class Enemy extends Entity {
 		return 1;
 	}
 	
-	public LootTable getLoot() {
+	public DropTable getLoot() {
         return loot;
     }
     

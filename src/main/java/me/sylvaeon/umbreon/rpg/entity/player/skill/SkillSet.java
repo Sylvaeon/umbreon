@@ -1,8 +1,5 @@
 package me.sylvaeon.umbreon.rpg.entity.player.skill;
 
-import me.sylvaeon.umbreon.helper.StringHelper;
-import net.dv8tion.jda.core.entities.TextChannel;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -26,26 +23,10 @@ public class SkillSet {
 		return skills.get(skillType);
 	}
 	
-	public int getLvl(SkillType skillType) {
-		return skills.get(skillType).getLvl();
-	}
-	
-	public int getXp(SkillType skillType) {
-		return skills.get(skillType).getXp();
-	}
-	
 	public void addXp(SkillType skillType, int xp) {
 		Skill skill = skills.get(skillType);
 		skill.addXp(xp);
 		skill.update();
-	}
-	
-	public void setXp(SkillType skillType, int xp) {
-		skills.get(skillType).setXp(xp);
-	}
-	
-	public void setLvl(SkillType skillType, int lvl) {
-		skills.get(skillType).setLvl(lvl);
 	}
 	
 	private void initSkills() {

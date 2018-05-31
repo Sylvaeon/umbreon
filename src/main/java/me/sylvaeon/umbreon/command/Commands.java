@@ -4,23 +4,22 @@ import me.sylvaeon.umbreon.music.command.*;
 import me.sylvaeon.umbreon.rpg.command.CommandRPGInventory;
 import me.sylvaeon.umbreon.rpg.command.CommandRPGLeaderboard;
 import me.sylvaeon.umbreon.rpg.command.CommandRPGXp;
-import me.sylvaeon.umbreon.helper.MapHelper;
+import me.sylvaeon.umbreon.rpg.command.action.CommandRPGCraft;
 import me.sylvaeon.umbreon.rpg.command.action.CommandRPGGive;
-import me.sylvaeon.umbreon.rpg.command.action.gathering.*;
-import me.sylvaeon.umbreon.rpg.command.action.crafting.CommandRPGBasicCraft;
+import me.sylvaeon.umbreon.rpg.command.action.gathering.CommandRPGLog;
+import me.sylvaeon.umbreon.rpg.command.action.gathering.CommandRPGMine;
 
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public final class Commands {
 	private static Map<String, Command> commands;
 	
 	public static void init() {
-		commands = new HashMap<>();
+		commands = new TreeMap<>();
 		addCommand("help", new CommandHelp(), "Shows this list");
 		addCommand("cat", new CommandCat(), "Meow.");
-		addCommand("dog", new CommandDog(), "Bork");
+		addCommand("dog", new CommandDog(), "Bork.");
 		addCommand("quit", new CommandQuit(), "Quits the bot");
 		addCommand("xp", new CommandRPGXp(), "Gets your current xp/level", "lvl");
 		addCommand("color", new CommandColor(), "Outputs a color/gradient");
@@ -35,20 +34,12 @@ public final class Commands {
 		addCommand("join", new CommandMusicJoin(), "Joins the voice channel you're in");
 		addCommand("leave", new CommandMusicLeave(), "Leaves the current voice channel");
 		addCommand("now-playing", new CommandMusicNowPlaying(), "Shows the currently playing song", "np");
-		//addCommand("fight", new CommandRPGFight(), "Fight!!!!!");
 		addCommand("pulse", new CommandTogglePulse(), "Toggles pulsing effect");
-		addCommand("fish", new CommandRPGFish(), "Go fishing");
-		addCommand("forage", new CommandRPGForage(), "Go foraging");
-		addCommand("hunt", new CommandRPGHunt(), "Go hunting");
 		addCommand("mine", new CommandRPGMine(), "Go mining");
 		addCommand("log", new CommandRPGLog(), "Go logging");
 		addCommand("inventory", new CommandRPGInventory(), "View your inventory", "inv");
-		addCommand("basic-craft", new CommandRPGBasicCraft(), "Basic crafting", "craft");
+		addCommand("craft", new CommandRPGCraft(), "Basic crafting", "crafting");
 		addCommand("give", new CommandRPGGive(), "Gives (cheats) an item");
-	}
-
-	static Collection<Command> getAllCommands() {
-		return MapHelper.sortByValues(commands).values();
 	}
 
 	public static Command getCommand(String name) {
@@ -72,5 +63,8 @@ public final class Commands {
 		command.setAliases(aliases);
 		commands.put(name, command);
 	}
-	
+
+	public static Map<String, Command> getCommands() {
+		return commands;
+	}
 }

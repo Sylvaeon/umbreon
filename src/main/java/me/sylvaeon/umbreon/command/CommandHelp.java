@@ -18,7 +18,7 @@ public class CommandHelp extends Command {
 		List<Command> normalCommands = new ArrayList<>();
 		List<Command> musicCommands = new ArrayList<>();
 		List<Command> rpgCommands = new ArrayList<>();
-		for(Command c : Commands.getAllCommands()) {
+		for(Command c : Commands.getCommands().values()) {
 			if(c instanceof CommandMusic) {
 				musicCommands.add(c);
 			} else if(c instanceof CommandRPG) {
