@@ -2,32 +2,46 @@ package me.sylvaeon.umbreon.rpg.entity.player;
 
 import me.sylvaeon.umbreon.rpg.item.Item;
 import me.sylvaeon.umbreon.rpg.item.ItemStack;
+import me.sylvaeon.umbreon.rpg.item.equipable.tool.Axe;
+import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
+import me.sylvaeon.umbreon.rpg.item.equipable.tool.Tool;
 
 import java.util.*;
 
 public class Inventory {
 	Map<Item, ItemStack> items;
 
+	Pickaxe pickaxe;
+	Axe axe;
+	
+	public Inventory(Pickaxe pickaxe, Axe axe) {
+		items = new TreeMap<>();
+		equipItem(pickaxe);
+		equipItem(axe);
+	}
+	
 	public Inventory() {
 		items = new TreeMap<>();
+		Pickaxe pickaxe = new Pickaxe("Wooden Pickaxe", Tool.MATERIAL_WOODEN);
+		Axe axe = new Axe("Wooden Axe", Tool.MATERIAL_WOODEN);
+		addItem(pickaxe);
+		addItem(axe);
+		equipItem(pickaxe);
+		equipItem(axe);
 	}
-
-	public Map<Item, ItemStack> getItems() {
-		return items;
+	
+	public void equipItem(Item item) {
+		if(items.containsKey(item)) {
+			if (item instanceof Pickaxe) {
+				Pickaxe pickaxe = (Pickaxe) item;
+				this.pickaxe = pickaxe;
+			} else if (item instanceof Axe) {
+				Axe axe = (Axe) item;
+				this.axe = axe;
+			}
+		}
 	}
-
-	public Collection<ItemStack> getItemStacks() {
-		return items.values();
-	}
-
-	public Set<Item> getItemKeys() {
-		return items.keySet();
-	}
-
-	public ItemStack getItemStack(Item item) {
-		return items.get(item);
-	}
-
+	
 	public void addItem(Item item, int amount) {
 		if(hasItem(item)) {
 			getItemStack(item).add(amount);
@@ -87,10 +101,38 @@ public class Inventory {
 
 	public void removeItem(Item item) {
 		items.remove(item);
+		if(pickaxe == item) {
+			pickaxe = null;
+		} else if(axe == item) {
+			axe = null;
+		}
 	}
 
 	public boolean isEmpty() {
 		return items.isEmpty();
 	}
-
+	
+	public Map<Item, ItemStack> getItems() {
+		return items;
+	}
+	
+	public Collection<ItemStack> getItemStacks() {
+		return items.values();
+	}
+	
+	public Set<Item> getItemKeys() {
+		return items.keySet();
+	}
+	
+	public ItemStack getItemStack(Item item) {
+		return items.get(item);
+	}
+	
+	public Pickaxe getPickaxe() {
+		return pickaxe;
+	}
+	
+	public Axe getAxe() {
+		return axe;
+	}
 }

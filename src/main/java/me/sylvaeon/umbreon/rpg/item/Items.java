@@ -1,9 +1,13 @@
 package me.sylvaeon.umbreon.rpg.item;
 
 import me.sylvaeon.umbreon.helper.StringHelper;
+import me.sylvaeon.umbreon.rpg.item.equipable.tool.Axe;
+import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
+import me.sylvaeon.umbreon.rpg.item.equipable.tool.Tool;
 import me.sylvaeon.umbreon.rpg.item.equipable.weapon.Sword;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -78,6 +82,24 @@ public class Items {
 						field.set(null, item);
 					}
 					items.put(item.getName(), item);
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		for(Field field : Tool.class.getDeclaredFields()) {
+			System.out.println(field.getName());
+			System.out.println(field.getType());
+			if(field.getType() == Double.TYPE && Modifier.isFinal(field.getModifiers())) {
+				System.out.println("woo");
+				try {
+					Double i = (Double) field.get(Double.class);
+					String name = StringHelper.formatEnumName(field.getName());
+					String materialName = name.split(" ")[1];
+					Pickaxe pickaxe = new Pickaxe(materialName + " Pickaxe", i);
+					items.put(pickaxe.getName(), pickaxe);
+					Axe axe = new Axe(materialName + " Axe", i);
+					items.put(axe.getName(), axe);
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				}

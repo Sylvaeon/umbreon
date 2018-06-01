@@ -7,7 +7,6 @@ import me.sylvaeon.umbreon.command.Command;
 import me.sylvaeon.umbreon.command.Commands;
 import me.sylvaeon.umbreon.helper.ColorHelper;
 import me.sylvaeon.umbreon.music.GuildMusicManager;
-import me.sylvaeon.umbreon.rpg.command.CommandRPG;
 import me.sylvaeon.umbreon.rpg.crafting.Recipes;
 import me.sylvaeon.umbreon.rpg.entity.enemy.Enemies;
 import me.sylvaeon.umbreon.rpg.entity.player.Player;
@@ -23,14 +22,11 @@ import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
 import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.managers.Presence;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 import javax.security.auth.login.LoginException;
 import java.awt.*;
-import java.io.*;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Umbreon extends ListenerAdapter {
     private static final String TOKEN = "NDQyODE5NDMzNTQ3ODI1MTUy.DdI0wg.k76KQG6xTf2Q22NdAW5_7_zU-oY";
@@ -59,9 +55,9 @@ public class Umbreon extends ListenerAdapter {
         playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
         AudioSourceManagers.registerLocalSource(playerManager);
-
-		Enemies.init();
+	
 		Items.init();
+		Enemies.init();
 		Recipes.init();
 		Players.init();
 		Commands.init();

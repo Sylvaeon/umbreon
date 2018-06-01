@@ -30,9 +30,6 @@ public class Player extends Entity implements Comparable<Player> {
 	private int lvl;
 	private Inventory inventory;
 	private SkillSet skillSet;
-
-	private Pickaxe pickaxe;
-	private Axe axe;
 	
 	public Player(String name) {
 		super();
@@ -41,10 +38,8 @@ public class Player extends Entity implements Comparable<Player> {
 		this.lvl = 1;
 		this.inventory = new Inventory();
 		this.skillSet = new SkillSet();
-		pickaxe = new Pickaxe("Wooden Pickaxe", Pickaxe.MATERIAL_WOOD);
-		axe = new Axe("Wooden Axe", Pickaxe.MATERIAL_WOOD);
 	}
-
+	
 	private void gather(TextChannel textChannel, SkillType skillType, ItemDrop... drops) {
 		DropTable lootTable = new DropTable(drops);
 		List<Item> list = lootTable.getDrops();
@@ -61,7 +56,6 @@ public class Player extends Entity implements Comparable<Player> {
 		} else {
 			textChannel.sendMessage("No resources gathered").queue();
 		}
-
 	}
 
 	//Gathering
@@ -71,14 +65,17 @@ public class Player extends Entity implements Comparable<Player> {
 				new ItemDrop(Items.BRANCH, 1, 2)
 		);
 	}
+	
 	public void mine(TextChannel textChannel) {
+		Pickaxe pickaxe = getInventory().getPickaxe();
 		gather(textChannel, SkillType.MINING,
 				new ItemDrop(Items.FLINT_SHARD, 1, 2),
-				new ItemDrop(Items.STONE, (getPickaxe().getToolLevel() >= Pickaxe.MATERIAL_FLINT) ? 4/3 : 0),
-				new ItemDrop(Items.COPPER_ORE, (getPickaxe().getToolLevel() >= Pickaxe.MATERIAL_STONE) ? 1/2 : 0),
-				new ItemDrop(Items.TIN_ORE, (getPickaxe().getToolLevel() >= Pickaxe.MATERIAL_COPPER) ? 1/3 : 0),
-				new ItemDrop(Items.IRON_ORE, (getPickaxe().getToolLevel() >= Pickaxe.MATERIAL_BRONZE) ? 1/4 : 0)
+				new ItemDrop(Items.STONE, (pickaxe.getToolLevel() >= Pickaxe.MATERIAL_FLINT) ? 4/3 : 0),
+				new ItemDrop(Items.COPPER_ORE, (pickaxe.getToolLevel() >= Pickaxe.MATERIAL_STONE) ? 1/2 : 0),
+				new ItemDrop(Items.TIN_ORE, (pickaxe.getToolLevel() >= Pickaxe.MATERIAL_COPPER) ? 1/3 : 0),
+				new ItemDrop(Items.IRON_ORE, (pickaxe.getToolLevel() >= Pickaxe.MATERIAL_BRONZE) ? 1/4 : 0)
 		);
+		System.out.println(getInventory().getPickaxe().getName());
 	}
 
 	public void fight(Enemy enemy, TextChannel textChannel) {
@@ -271,15 +268,7 @@ public class Player extends Entity implements Comparable<Player> {
 	public SkillSet getSkillSet() {
 		return skillSet;
 	}
-
-	public Pickaxe getPickaxe() {
-		return pickaxe;
-	}
-
-	public Axe getAxe() {
-		return axe;
-	}
-
+	
 	@Override
 	public int compareTo(@NotNull Player o) {
 		return Integer.compare(getTotalXp(), o.getTotalXp());
