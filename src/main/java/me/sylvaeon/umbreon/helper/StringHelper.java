@@ -61,4 +61,29 @@ public class StringHelper {
 		}
 		return concatArray(split, ' ');
 	}
+
+	public static String getProgressBar(int lvl, int xp, int xpNeeded) {
+		return lvl + " " + getProgressBar((double) xp / xpNeeded) + " " + (lvl + 1);
+	}
+
+	/**
+	 * @param progress
+	 * Should be a double at least 0 and less than 1
+	 * @return
+	 */
+	public static String getProgressBar(double progress) {
+		progress *= 10;
+		progress = (int) Math.round(progress);
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("-[");
+		for(int i = 0; i < progress; i++) {
+			stringBuilder.append("■");
+		}
+		for(int i = 0; i < 10 - progress; i++) {
+			stringBuilder.append("□");
+		}
+		stringBuilder.append("]-");
+		return stringBuilder.toString();
+	}
+
 }

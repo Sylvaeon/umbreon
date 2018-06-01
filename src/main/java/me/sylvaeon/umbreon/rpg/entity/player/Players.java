@@ -4,6 +4,8 @@ import me.sylvaeon.umbreon.Umbreon;
 import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillType;
 import me.sylvaeon.umbreon.rpg.item.ItemStack;
 import me.sylvaeon.umbreon.rpg.item.Items;
+import me.sylvaeon.umbreon.rpg.item.equipable.tool.Axe;
+import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
 import net.dv8tion.jda.core.entities.Member;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -104,6 +106,11 @@ public class Players {
 					int value = Math.toIntExact((long) lvls.get(key));
 					player.getSkillSet().getSkill(SkillType.valueOf(key)).setLvl(value);
 				}
+				JSONObject tools = (JSONObject) jsonObject.get("tools");
+				String pickaxe = (String) tools.get("pickaxe");
+				String axe = (String) tools.get("axe");
+				player.getInventory().setPickaxe((Pickaxe) Items.getItem(pickaxe));
+				player.getInventory().setAxe((Axe) Items.getItem(axe));
 			} catch (ParseException | IOException | NullPointerException e) {
 				e.printStackTrace();
 			}
@@ -139,6 +146,10 @@ public class Players {
 		for(ItemStack itemStack : player.getInventory().getItemStacks()) {
 			inventory.put(itemStack.getItem().getName(), itemStack.getAmount());
 		}
+		JSONObject tools = new JSONObject();
+		tools.put("pickaxe", player.getInventory().getPickaxe().getName());
+		tools.put("axe", player.getInventory().getAxe().getName());
+		jsonObject.put("tools", tools);
 		jsonObject.put("inventory", inventory);
 		try(FileWriter fileWriter = new FileWriter(file)) {
 			fileWriter.write(jsonObject.toJSONString());

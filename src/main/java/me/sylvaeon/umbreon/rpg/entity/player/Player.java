@@ -1,6 +1,5 @@
 package me.sylvaeon.umbreon.rpg.entity.player;
 
-import com.sun.istack.internal.NotNull;
 import me.sylvaeon.umbreon.helper.MapHelper;
 import me.sylvaeon.umbreon.helper.StringHelper;
 import me.sylvaeon.umbreon.rpg.crafting.Recipe;
@@ -12,11 +11,12 @@ import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillType;
 import me.sylvaeon.umbreon.rpg.item.Item;
 import me.sylvaeon.umbreon.rpg.item.ItemStack;
 import me.sylvaeon.umbreon.rpg.item.Items;
-import me.sylvaeon.umbreon.rpg.item.equipable.tool.Axe;
-import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
-import me.sylvaeon.umbreon.rpg.item.drop.ItemDrop;
 import me.sylvaeon.umbreon.rpg.item.drop.DropTable;
+import me.sylvaeon.umbreon.rpg.item.drop.ItemDrop;
+import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
 import net.dv8tion.jda.core.entities.TextChannel;
+import org.jetbrains.annotations.Contract;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,12 +25,12 @@ import java.util.TreeMap;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Player extends Entity implements Comparable<Player> {
-	
+
 	private int xp;
 	private int lvl;
 	private Inventory inventory;
 	private SkillSet skillSet;
-	
+
 	public Player(String name) {
 		super();
 		this.name = name;
@@ -39,15 +39,36 @@ public class Player extends Entity implements Comparable<Player> {
 		this.inventory = new Inventory();
 		this.skillSet = new SkillSet();
 	}
-	
+
+	@Contract(pure = true)
+	public static int getTotalXp(int lvl) {
+		int count = 0;
+		for (int i = 1; i <= lvl; i++) {
+			count += getXpNeeded(i);
+		}
+		return count;
+	}
+
+	@Contract(pure = true)
+	public static int getXpNeeded(int lvl) {
+		return lvl;
+	}
+
+
+	@NotNull
+	@Contract(pure = true)
+	private static String getLevelUpMessage(int start, int end) {
+		return "Level up! (" + start + " -> " + end + ")";
+	}
+
 	private void gather(TextChannel textChannel, SkillType skillType, ItemDrop... drops) {
 		DropTable lootTable = new DropTable(drops);
 		List<Item> list = lootTable.getDrops();
 		int xp = 1;
-		if(!list.isEmpty()) {
+		if (!list.isEmpty()) {
 			Map<Item, Integer> map = MapHelper.collectionToAmountMap(list);
 			String msg = "Resources gathered:\n";
-			for(Item item : map.keySet()) {
+			for (Item item : map.keySet()) {
 				msg += map.get(item) + "x " + item.getName() + "\n";
 			}
 			textChannel.sendMessage(msg).queue();
@@ -61,19 +82,19 @@ public class Player extends Entity implements Comparable<Player> {
 	//Gathering
 	public void log(TextChannel textChannel) {
 		gather(textChannel, SkillType.LOGGING,
-				new ItemDrop(Items.LOG, 1),
-				new ItemDrop(Items.BRANCH, 1, 2)
+			new ItemDrop(Items.LOG, 1),
+			new ItemDrop(Items.BRANCH, 1, 2)
 		);
 	}
-	
+
 	public void mine(TextChannel textChannel) {
-		Pickaxe pickaxe = getInventory().getPickaxe();
+		double pickaxe = getInventory().getPickaxe().getToolLevel();
 		gather(textChannel, SkillType.MINING,
-				new ItemDrop(Items.FLINT_SHARD, 1, 2),
-				new ItemDrop(Items.STONE, (pickaxe.getToolLevel() >= Pickaxe.MATERIAL_FLINT) ? 4/3 : 0),
-				new ItemDrop(Items.COPPER_ORE, (pickaxe.getToolLevel() >= Pickaxe.MATERIAL_STONE) ? 1/2 : 0),
-				new ItemDrop(Items.TIN_ORE, (pickaxe.getToolLevel() >= Pickaxe.MATERIAL_COPPER) ? 1/3 : 0),
-				new ItemDrop(Items.IRON_ORE, (pickaxe.getToolLevel() >= Pickaxe.MATERIAL_BRONZE) ? 1/4 : 0)
+			new ItemDrop(Items.FLINT_SHARD, 1, 2),
+			new ItemDrop(Items.STONE, (pickaxe >= Pickaxe.MATERIAL_FLINT) ? 4 / 3 : 0),
+			new ItemDrop(Items.COPPER_ORE, (pickaxe >= Pickaxe.MATERIAL_STONE) ? 1 / 2 : 0),
+			new ItemDrop(Items.TIN_ORE, (pickaxe >= Pickaxe.MATERIAL_COPPER) ? 1 / 3 : 0),
+			new ItemDrop(Items.IRON_ORE, (pickaxe >= Pickaxe.MATERIAL_BRONZE) ? 1 / 4 : 0)
 		);
 		System.out.println(getInventory().getPickaxe().getName());
 	}
@@ -84,86 +105,86 @@ public class Player extends Entity implements Comparable<Player> {
 		StringBuilder builder = new StringBuilder();
 		builder.append(outputStatus(enemy));
 		loop:
-		while(turn <= 256) {
+		while (turn <= 256) {
 			turn++;
 			playerDamage = getDmg();
 			enemyDamage = enemy.getDmg();
 			switch (getLifeState(enemy)) {
-			case 1:
-				builder.append("You lost :(");
-				break loop;
-			case 2:
-				int xp = ThreadLocalRandom.current().nextInt(enemy.getXpMin(), enemy.getXpMax() + 1);
-				List<Item> loot = enemy.getLoot().getDrops();
-				builder.append("You won!").append("\n");
-				addXp(xp, textChannel);
-				builder.append("Loot drops: ").append("\n");
-				Map<Item, Integer> drops = new TreeMap<>();
-				for(Item drop : loot) {
-					if(!drops.containsKey(drop)) {
-						drops.put(drop, 1);
-					} else {
-						drops.put(drop, drops.get(drop) + 1);
+				case 1:
+					builder.append("You lost :(");
+					break loop;
+				case 2:
+					int xp = ThreadLocalRandom.current().nextInt(enemy.getXpMin(), enemy.getXpMax() + 1);
+					List<Item> loot = enemy.getLoot().getDrops();
+					builder.append("You won!").append("\n");
+					addXp(xp, textChannel);
+					builder.append("Loot drops: ").append("\n");
+					Map<Item, Integer> drops = new TreeMap<>();
+					for (Item drop : loot) {
+						if (!drops.containsKey(drop)) {
+							drops.put(drop, 1);
+						} else {
+							drops.put(drop, drops.get(drop) + 1);
+						}
 					}
-				}
-				for(Map.Entry<Item, Integer> entry : drops.entrySet()) {
-					builder.append(entry.getValue()).append("x ").append(entry.getKey().getName()).append("\n");
-				}
-				getInventory().addItems(enemy.getLoot().getDrops());
-				break loop;
-			case 0:
-				builder.append("\nTurn ").append(turn).append("\n");
-				enemy.takeDamage(playerDamage);
-				builder.append("You did ").append(playerDamage).append(" dmg to ").append(enemy.getName()).append("\n");
-				builder.append(outputStatus(enemy));
-				if (enemy.dead()) {
-					break;
-				} else {
-					builder.append("You took ").append(enemyDamage).append(" dmg from ").append(enemy.getName()).append("\n");
-					takeDamage(enemyDamage);
+					for (Map.Entry<Item, Integer> entry : drops.entrySet()) {
+						builder.append(entry.getValue()).append("x ").append(entry.getKey().getName()).append("\n");
+					}
+					getInventory().addItems(enemy.getLoot().getDrops());
+					break loop;
+				case 0:
+					builder.append("\nTurn ").append(turn).append("\n");
+					enemy.takeDamage(playerDamage);
+					builder.append("You did ").append(playerDamage).append(" dmg to ").append(enemy.getName()).append("\n");
 					builder.append(outputStatus(enemy));
-				}
-				break;
+					if (enemy.dead()) {
+						break;
+					} else {
+						builder.append("You took ").append(enemyDamage).append(" dmg from ").append(enemy.getName()).append("\n");
+						takeDamage(enemyDamage);
+						builder.append(outputStatus(enemy));
+					}
+					break;
 			}
 		}
 		textChannel.sendMessage(builder.toString()).queue();
-		resetHealth();
 	}
-	
+
 	private byte getLifeState(Enemy enemy) {
-		if(dead()) {
+		if (dead()) {
 			return 1;
-		} else if(enemy.dead()) {
+		} else if (enemy.dead()) {
 			return 2;
 		} else {
 			return 0;
 		}
 	}
-	
+
+	@NotNull
 	private String outputStatus(Enemy enemy) {
 		StringBuilder builder = new StringBuilder();
 		builder.append("Your HP: ").append((int) getHealth()).append("/").append((int) getMaxHealth()).append("\n");
 		builder.append("Their HP: ").append((int) enemy.getHealth()).append("/").append((int) enemy.getMaxHealth()).append("\n");
 		return builder.toString();
 	}
-	
+
 	@Override
 	public double getDmg() {
 		return getLvl();
 	}
-	
+
 	public void addSkillXp(TextChannel textChannel, SkillType skillType, int xp) {
 		int lvl = getSkillSet().getSkill(skillType).getLvl();
 		getSkillSet().addXp(skillType, xp);
-		if(getSkillSet().getSkill(skillType).getLvl() != lvl) {
+		if (getSkillSet().getSkill(skillType).getLvl() != lvl) {
 			textChannel.sendMessage(StringHelper.formatEnum(skillType) + " " + getLevelUpMessage(lvl, getSkillSet().getSkill(skillType).getLvl())).queue();
 			addXp((int) Math.floor(Math.sqrt(getSkillSet().getSkill(skillType).getLvl())), textChannel);
 		}
 	}
-	
+
 	public boolean canCraft(Recipe recipe) {
-		for(ItemStack itemStack : recipe.getInputs()) {
-			if(getInventory().getAmount(itemStack.getItem()) < itemStack.getAmount()) {
+		for (ItemStack itemStack : recipe.getInputs()) {
+			if (getInventory().getAmount(itemStack.getItem()) < itemStack.getAmount()) {
 				return false;
 			}
 		}
@@ -172,8 +193,8 @@ public class Player extends Entity implements Comparable<Player> {
 
 	public List<Recipe> getAvailableRecipes() {
 		List<Recipe> recipeList = new ArrayList<>();
-		for(Recipe recipe : Recipes.getRecipes()) {
-			if(canCraft(recipe)) {
+		for (Recipe recipe : Recipes.getRecipes()) {
+			if (canCraft(recipe)) {
 				recipeList.add(recipe);
 			}
 		}
@@ -181,21 +202,21 @@ public class Player extends Entity implements Comparable<Player> {
 	}
 
 	public boolean craft(Recipe recipe, TextChannel textChannel) {
-		if(canCraft(recipe)) {
+		if (canCraft(recipe)) {
 			Inventory inventory = getInventory();
-			for(ItemStack itemStack : recipe.getInputs()) {
+			for (ItemStack itemStack : recipe.getInputs()) {
 				inventory.subtractItem(itemStack.getItem(), itemStack.getAmount());
 			}
-			for(ItemStack itemStack : recipe.getOutputs()) {
+			for (ItemStack itemStack : recipe.getOutputs()) {
 				inventory.addItem(itemStack.getItem(), itemStack.getAmount());
 			}
 		}
 		return canCraft(recipe);
 	}
-	
+
 	public void update() {
-		while(xp > 0) {
-			if(xp >= getXpNeeded()) {
+		while (xp > 0) {
+			if (xp >= getXpNeeded()) {
 				xp -= getXpNeeded();
 				lvl++;
 			} else {
@@ -206,18 +227,6 @@ public class Player extends Entity implements Comparable<Player> {
 
 	public int getTotalXp() {
 		return getTotalXp(lvl) + getXp();
-	}
-
-	public static int getTotalXp(int lvl) {
-		int count = 0;
-		for(int i = 1; i <= lvl; i++) {
-			count += getXpNeeded(i);
-		}
-		return count;
-	}
-
-	public static int getXpNeeded(int lvl) {
-		return lvl;
 	}
 
 	public int getXpNeeded() {
@@ -244,13 +253,9 @@ public class Player extends Entity implements Comparable<Player> {
 		int lvl = getLvl();
 		this.xp += xp;
 		update();
-		if(getLvl() != lvl) {
+		if (getLvl() != lvl) {
 			textChannel.sendMessage("Character " + getLevelUpMessage(lvl, getLvl())).queue();
 		}
-	}
-
-	private static String getLevelUpMessage(int start, int end) {
-		return "Level up! (" + start + " -> " + end + ")";
 	}
 
 	public int getLvl() {
@@ -268,7 +273,15 @@ public class Player extends Entity implements Comparable<Player> {
 	public SkillSet getSkillSet() {
 		return skillSet;
 	}
-	
+
+	public void setInventory(Inventory inventory) {
+		this.inventory = inventory;
+	}
+
+	public void setSkillSet(SkillSet skillSet) {
+		this.skillSet = skillSet;
+	}
+
 	@Override
 	public int compareTo(@NotNull Player o) {
 		return Integer.compare(getTotalXp(), o.getTotalXp());

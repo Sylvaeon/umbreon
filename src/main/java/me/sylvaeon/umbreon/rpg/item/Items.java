@@ -88,10 +88,7 @@ public class Items {
 			}
 		}
 		for(Field field : Tool.class.getDeclaredFields()) {
-			System.out.println(field.getName());
-			System.out.println(field.getType());
 			if(field.getType() == Double.TYPE && Modifier.isFinal(field.getModifiers())) {
-				System.out.println("woo");
 				try {
 					Double i = (Double) field.get(Double.class);
 					String name = StringHelper.formatEnumName(field.getName());

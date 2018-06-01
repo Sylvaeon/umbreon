@@ -9,25 +9,23 @@ import me.sylvaeon.umbreon.rpg.item.equipable.tool.Tool;
 import java.util.*;
 
 public class Inventory {
-	Map<Item, ItemStack> items;
+	private Map<Item, ItemStack> items;
 
-	Pickaxe pickaxe;
-	Axe axe;
-	
-	public Inventory(Pickaxe pickaxe, Axe axe) {
-		items = new TreeMap<>();
-		equipItem(pickaxe);
-		equipItem(axe);
-	}
-	
+	private Pickaxe pickaxe;
+	private Axe axe;
+
 	public Inventory() {
 		items = new TreeMap<>();
-		Pickaxe pickaxe = new Pickaxe("Wooden Pickaxe", Tool.MATERIAL_WOODEN);
-		Axe axe = new Axe("Wooden Axe", Tool.MATERIAL_WOODEN);
-		addItem(pickaxe);
-		addItem(axe);
-		equipItem(pickaxe);
-		equipItem(axe);
+		if(pickaxe == null) {
+			Pickaxe pickaxe = new Pickaxe("Wooden Pickaxe", Tool.MATERIAL_WOODEN);
+			addItem(pickaxe);
+			equipItem(pickaxe);
+		}
+		if(axe == null) {
+			Axe axe = new Axe("Wooden Axe", Tool.MATERIAL_WOODEN);
+			addItem(axe);
+			equipItem(axe);
+		}
 	}
 	
 	public void equipItem(Item item) {
@@ -134,5 +132,17 @@ public class Inventory {
 	
 	public Axe getAxe() {
 		return axe;
+	}
+
+	public void setItems(Map<Item, ItemStack> items) {
+		this.items = items;
+	}
+
+	public void setPickaxe(Pickaxe pickaxe) {
+		this.pickaxe = pickaxe;
+	}
+
+	public void setAxe(Axe axe) {
+		this.axe = axe;
 	}
 }

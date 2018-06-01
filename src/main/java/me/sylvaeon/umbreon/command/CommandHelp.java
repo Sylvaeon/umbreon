@@ -4,6 +4,7 @@ import me.sylvaeon.umbreon.music.command.CommandMusic;
 import me.sylvaeon.umbreon.rpg.command.CommandRPG;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.PrivateChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import net.dv8tion.jda.core.entities.User;
 
@@ -19,47 +20,46 @@ public class CommandHelp extends Command {
 		List<Command> musicCommands = new ArrayList<>();
 		List<Command> rpgCommands = new ArrayList<>();
 		for(Command c : Commands.getCommands().values()) {
-			if(c instanceof CommandMusic) {
-				musicCommands.add(c);
-			} else if(c instanceof CommandRPG) {
-				rpgCommands.add(c);
-			} else {
-				normalCommands.add(c);
+			if(Commands.canExecute(member, c)) {
+				if (c instanceof CommandMusic) {
+					musicCommands.add(c);
+				} else if (c instanceof CommandRPG) {
+					rpgCommands.add(c);
+				} else {
+					normalCommands.add(c);
+				}
 			}
 		}
 		if(args.length == 0) {
-			EmbedBuilder generalBuilder = new EmbedBuilder();
-			EmbedBuilder musicBuilder = new EmbedBuilder();
-			EmbedBuilder rpgBuilder = new EmbedBuilder();
-			
-			generalBuilder.setTitle("General Commands:");
-			generalBuilder.setColor(Color.MAGENTA);
-			for(Command c : normalCommands) {
-				addCommandAsField(generalBuilder, c);
+			PrivateChannel privateChannel = user.openPrivateChannel().complete();
+			if(!normalCommands.isEmpty()) {
+				EmbedBuilder generalBuilder = new EmbedBuilder();
+				generalBuilder.setTitle("General Commands:");
+				generalBuilder.setColor(Color.MAGENTA);
+				for(Command c : normalCommands) {
+					addCommandAsField(generalBuilder, c);
+				}
+				privateChannel.sendMessage(generalBuilder.build()).queue();
 			}
-
-			musicBuilder.setTitle("Music Commands:");
-			musicBuilder.setColor(Color.CYAN);
-			for(Command c : musicCommands) {
-				addCommandAsField(musicBuilder, c);
-			}
-
-			rpgBuilder.setTitle("RPG Commands:");
-			rpgBuilder.setColor(Color.MAGENTA);
-			for(Command c : rpgCommands) {
-				addCommandAsField(rpgBuilder, c);
-			}
-			
-			EmbedBuilder finalGeneralBuilder = generalBuilder;
-			user.openPrivateChannel().queue(privateChannel -> {
-				privateChannel.sendMessage(finalGeneralBuilder.build()).queue();
+			if(!musicCommands.isEmpty()) {
+				EmbedBuilder musicBuilder = new EmbedBuilder();
+				musicBuilder.setTitle("Music Commands:");
+				musicBuilder.setColor(Color.CYAN);
+				for(Command c : musicCommands) {
+					addCommandAsField(musicBuilder, c);
+				}
 				privateChannel.sendMessage(musicBuilder.build()).queue();
+
+			}
+			if(!rpgCommands.isEmpty()) {
+				EmbedBuilder rpgBuilder = new EmbedBuilder();
+				rpgBuilder.setTitle("RPG Commands:");
+				rpgBuilder.setColor(Color.MAGENTA);
+				for(Command c : rpgCommands) {
+					addCommandAsField(rpgBuilder, c);
+				}
 				privateChannel.sendMessage(rpgBuilder.build()).queue();
-			});
-			
-			
-		} else if(args.length == 1) {
-			EmbedBuilder embedBuilder = new EmbedBuilder();
+			}
 		}
 	}
 

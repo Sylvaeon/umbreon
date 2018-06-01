@@ -1,32 +1,30 @@
 package me.sylvaeon.umbreon.rpg.command;
 
+import me.sylvaeon.umbreon.helper.MathHelper;
 import me.sylvaeon.umbreon.helper.StringHelper;
 import me.sylvaeon.umbreon.rpg.entity.player.Player;
 import me.sylvaeon.umbreon.rpg.entity.player.Players;
+import me.sylvaeon.umbreon.rpg.entity.player.skill.Skill;
+import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillSet;
 import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillType;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
-
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 public class CommandRPGXp extends CommandRPG {
 	@Override
 	public void onCall(String[] args, Member member, TextChannel textChannel) {
 		Player player = Players.getPlayer(member);
-		String msg = "";
-		msg += "Character Level: " + (player.getLvl() + round( (double) player.getXp() / player.getXpNeeded(), 2)) + "\n";
+		String msg = "Xp/Levels of " + member.getAsMention() + ":\n";
+		SkillSet skillSet = player.getSkillSet();
+		Skill skill;
+		msg += "Character Level: " + StringHelper.getProgressBar(player.getLvl(), player.getXp(), player.getXpNeeded()) + "\n";
 		for(SkillType skillType : SkillType.values()) {
-			msg += StringHelper.formatEnum(skillType) + " Level: " + (player.getSkillSet().getSkill(skillType).getLvl() + round( (double) player.getSkillSet().getSkill(skillType).getXp() / player.getSkillSet().getSkill(skillType).getXpNeeded(), 2)) + "\n";
+			skill = skillSet.getSkill(skillType);
+			msg += StringHelper.formatEnum(skillType) + " Level: " + StringHelper.getProgressBar(skill.getLvl(), skill.getXp(), skill.getXpNeeded()) + "\n";
 		}
 		textChannel.sendMessage(msg).queue();
 	}
-	
-	private static double round(double value, int places) {
-		if (places < 0) throw new IllegalArgumentException();
-		
-		BigDecimal bd = new BigDecimal(value);
-		bd = bd.setScale(places, RoundingMode.HALF_UP);
-		return bd.doubleValue();
-	}
+
+
+
 }

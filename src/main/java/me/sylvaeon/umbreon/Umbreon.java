@@ -147,8 +147,9 @@ public class Umbreon extends ListenerAdapter {
 				messageString = messageString.substring(1);
 				String[] split = messageString.split(" ");
 				Command command = Commands.getCommand(split[0]);
+				message.delete().complete();
 				if (command != null) {
-					if (!command.requiresAdmin() || member.hasPermission(Permission.ADMINISTRATOR)) {
+					if (Commands.canExecute(member, command)) {
 						String[] args = new String[split.length - 1];
 						if (args.length != 0) {
 							for (int i = 1; i < split.length; i++) {
@@ -161,11 +162,6 @@ public class Umbreon extends ListenerAdapter {
 					}
 				} else {
 					textChannel.sendMessage("Error: Not a valid command! Type $help for a list of commands").queue();
-				}
-				try {
-					message.delete().complete();
-				} catch (Exception e) {
-
 				}
 			}
 			if (messageString.toLowerCase().contains("sylvan")) {
