@@ -1,6 +1,6 @@
 package me.sylvaeon.umbreon.rpg.item.drop;
 
-import me.sylvaeon.umbreon.helper.MathHelper;
+import me.sylvaeon.umbreon.Utility;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -24,7 +24,7 @@ public class DropAmount {
             return ThreadLocalRandom.current().nextInt(min, max + 1);
         } else {
         	int base = (int) Math.floor(chance);
-            return base + (MathHelper.intervalChance(chance - base) ? 1 : 0);
+            return base + (Utility.intervalChance(chance - base) ? 1 : 0);
         }
     }
 }

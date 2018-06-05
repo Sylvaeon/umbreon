@@ -6,7 +6,10 @@ import me.sylvaeon.umbreon.rpg.item.equipable.tool.Axe;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Tool;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Map;
+import java.util.Set;
+import java.util.TreeMap;
 
 public class Inventory {
 	private Map<Item, ItemStack> items;
@@ -16,30 +19,57 @@ public class Inventory {
 
 	public Inventory() {
 		items = new TreeMap<>();
-		if(pickaxe == null) {
-			Pickaxe pickaxe = new Pickaxe("Wooden Pickaxe", Tool.MATERIAL_WOODEN);
-			addItem(pickaxe);
-			equipItem(pickaxe);
-		}
-		if(axe == null) {
-			Axe axe = new Axe("Wooden Axe", Tool.MATERIAL_WOODEN);
-			addItem(axe);
-			equipItem(axe);
-		}
 	}
-	
-	public void equipItem(Item item) {
-		if(items.containsKey(item)) {
+
+	public void initTools() {
+		pickaxe = new Pickaxe("Wooden Pickaxe", Tool.MATERIAL_WOODEN);
+		addItem(pickaxe);
+		equipItem(pickaxe);
+		axe = new Axe("Wooden Axe", Tool.MATERIAL_WOODEN);
+		addItem(axe);
+		equipItem(axe);
+	}
+
+	public void setTools(Pickaxe pickaxe, Axe axe) {
+		equipItem(pickaxe);
+		equipItem(axe);
+	}
+
+	public boolean isEquipped(Item item) {
+		if(item == pickaxe) {
+			return true;
+		} else if(item == axe) {
+			return true;
+		}
+		return false;
+	}
+
+	public boolean equipItem(Item item) {
+		if(item != null && hasItem(item)) {
 			if (item instanceof Pickaxe) {
 				Pickaxe pickaxe = (Pickaxe) item;
 				this.pickaxe = pickaxe;
+				return true;
 			} else if (item instanceof Axe) {
 				Axe axe = (Axe) item;
 				this.axe = axe;
+				return true;
 			}
 		}
+		return false;
 	}
-	
+
+	public boolean unequipItem(Item item) {
+		if(item == pickaxe) {
+			pickaxe = null;
+			return true;
+		} else if(item == axe) {
+			axe = null;
+			return true;
+		}
+		return false;
+	}
+
 	public void addItem(Item item, int amount) {
 		if(hasItem(item)) {
 			getItemStack(item).add(amount);
@@ -145,4 +175,5 @@ public class Inventory {
 	public void setAxe(Axe axe) {
 		this.axe = axe;
 	}
+
 }

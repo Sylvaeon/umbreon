@@ -20,7 +20,11 @@ public class Item implements Comparable<Item> {
 	}
 
 	public String getName() {
-		return name;
+		if (name != null) {
+			return name;
+		} else {
+			return "null";
+		}
 	}
 
 	public ItemRarity getItemRarity() {

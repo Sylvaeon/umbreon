@@ -1,7 +1,6 @@
 package me.sylvaeon.umbreon.rpg.entity.player;
 
-import me.sylvaeon.umbreon.helper.MapHelper;
-import me.sylvaeon.umbreon.helper.StringHelper;
+import me.sylvaeon.umbreon.Utility;
 import me.sylvaeon.umbreon.rpg.crafting.Recipe;
 import me.sylvaeon.umbreon.rpg.crafting.Recipes;
 import me.sylvaeon.umbreon.rpg.entity.Entity;
@@ -36,8 +35,8 @@ public class Player extends Entity implements Comparable<Player> {
 		this.name = name;
 		this.xp = 0;
 		this.lvl = 1;
-		this.inventory = new Inventory();
 		this.skillSet = new SkillSet();
+		inventory = new Inventory();
 	}
 
 	@Contract(pure = true)
@@ -66,7 +65,7 @@ public class Player extends Entity implements Comparable<Player> {
 		List<Item> list = lootTable.getDrops();
 		int xp = 1;
 		if (!list.isEmpty()) {
-			Map<Item, Integer> map = MapHelper.collectionToAmountMap(list);
+			Map<Item, Integer> map = Utility.collectionToAmountMap(list);
 			String msg = "Resources gathered:\n";
 			for (Item item : map.keySet()) {
 				msg += map.get(item) + "x " + item.getName() + "\n";
@@ -96,7 +95,6 @@ public class Player extends Entity implements Comparable<Player> {
 			new ItemDrop(Items.TIN_ORE, (pickaxe >= Pickaxe.MATERIAL_COPPER) ? 1 / 3 : 0),
 			new ItemDrop(Items.IRON_ORE, (pickaxe >= Pickaxe.MATERIAL_BRONZE) ? 1 / 4 : 0)
 		);
-		System.out.println(getInventory().getPickaxe().getName());
 	}
 
 	public void fight(Enemy enemy, TextChannel textChannel) {
@@ -177,7 +175,7 @@ public class Player extends Entity implements Comparable<Player> {
 		int lvl = getSkillSet().getSkill(skillType).getLvl();
 		getSkillSet().addXp(skillType, xp);
 		if (getSkillSet().getSkill(skillType).getLvl() != lvl) {
-			textChannel.sendMessage(StringHelper.formatEnum(skillType) + " " + getLevelUpMessage(lvl, getSkillSet().getSkill(skillType).getLvl())).queue();
+			textChannel.sendMessage(Utility.formatEnum(skillType) + " " + getLevelUpMessage(lvl, getSkillSet().getSkill(skillType).getLvl())).queue();
 			addXp((int) Math.floor(Math.sqrt(getSkillSet().getSkill(skillType).getLvl())), textChannel);
 		}
 	}

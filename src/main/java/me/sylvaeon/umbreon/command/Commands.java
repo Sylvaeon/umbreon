@@ -1,9 +1,7 @@
 package me.sylvaeon.umbreon.command;
 
 import me.sylvaeon.umbreon.music.command.*;
-import me.sylvaeon.umbreon.rpg.command.CommandRPGInventory;
-import me.sylvaeon.umbreon.rpg.command.CommandRPGLeaderboard;
-import me.sylvaeon.umbreon.rpg.command.CommandRPGXp;
+import me.sylvaeon.umbreon.rpg.command.*;
 import me.sylvaeon.umbreon.rpg.command.action.CommandRPGCraft;
 import me.sylvaeon.umbreon.rpg.command.action.CommandRPGGive;
 import me.sylvaeon.umbreon.rpg.command.action.gathering.CommandRPGLog;
@@ -44,6 +42,10 @@ public final class Commands {
 		addCommand("give", new CommandRPGGive(), "Gives (cheats) an item");
 		addCommand("private-room", new CommandCreatePrivateRoom(), "Creates a private room");
 		addCommand("move-all-openmic", new CommandMoveAllOpenMic(), "Moves everyone with their mic on", "maom", "move-open-mic");
+		addCommand("load-players", new CommandRPGLoadPlayers(), "Loads players");
+		addCommand("save-players", new CommandRPGSavePlayers(), "Saves players");
+		addCommand("equip-item", new CommandRPGEquipItem(), "Equips an unquipped item", "equip");
+		addCommand("unequip-item", new CommandRPGUnequipItem(), "Unequipps an equipped item", "unequip");
 	}
 
 	public static Command getCommand(String name) {

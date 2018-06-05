@@ -1,6 +1,6 @@
 package me.sylvaeon.umbreon.rpg.command;
 
-import me.sylvaeon.umbreon.helper.MapHelper;
+import me.sylvaeon.umbreon.Utility;
 import me.sylvaeon.umbreon.rpg.entity.player.Player;
 import me.sylvaeon.umbreon.rpg.entity.player.Players;
 import net.dv8tion.jda.core.EmbedBuilder;
@@ -15,7 +15,7 @@ import java.util.List;
 public class CommandRPGLeaderboard extends CommandRPG {
 	@Override
 	public void onCall(String[] args, Member member, TextChannel textChannel) {
-		List<Member> sortedList = new ArrayList<>(MapHelper.sortByValues(Players.players).keySet());
+		List<Member> sortedList = new ArrayList<>(Utility.sortByValues(Players.players).keySet());
 		EmbedBuilder embedBuilder = new EmbedBuilder();
 		embedBuilder.setAuthor("\uD83D\uDC98\uD83E\uDDE1\uD83D\uDC9B\uD83D\uDC9A\uD83D\uDC99\uD83D\uDC9CLevel Leaderboard\uD83D\uDC9C\uD83D\uDC99\uD83D\uDC9A\uD83D\uDC9B\uD83E\uDDE1\uD83D\uDC98");
 		embedBuilder.setTitle("(1 message = 1 xp)");

@@ -5,7 +5,6 @@ import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
 import com.sedmelluq.discord.lavaplayer.source.AudioSourceManagers;
 import me.sylvaeon.umbreon.command.Command;
 import me.sylvaeon.umbreon.command.Commands;
-import me.sylvaeon.umbreon.helper.ColorHelper;
 import me.sylvaeon.umbreon.music.GuildMusicManager;
 import me.sylvaeon.umbreon.rpg.crafting.Recipes;
 import me.sylvaeon.umbreon.rpg.entity.enemy.Enemies;
@@ -69,7 +68,7 @@ public class Umbreon extends ListenerAdapter {
                 try {
                     for (int i = 0; i < Integer.MAX_VALUE; i++) {
                         if(endPulse) {
-                            Color color = ColorHelper.getPinkGradientColor(7);
+                            Color color = Utility.getPinkGradientColor(7);
 							guild.getRolesByName("\uD83D\uDC51Owner", true).get(0).getManager().setColor(color).complete();
                             return;
                         } else {
@@ -77,7 +76,7 @@ public class Umbreon extends ListenerAdapter {
                                 i = 0;
                             }
                             if(pulse) {
-                                Color color = ColorHelper.getPinkGradientColor(i % 14);
+                                Color color = Utility.getPinkGradientColor(i % 14);
 								guild.getRolesByName("\uD83D\uDC51Owner", true).get(0).getManager().setColor(color).queue();
                             }
                             synchronized (this) {

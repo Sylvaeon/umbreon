@@ -1,6 +1,6 @@
 package me.sylvaeon.umbreon.rpg.item;
 
-import me.sylvaeon.umbreon.helper.StringHelper;
+import me.sylvaeon.umbreon.Utility;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Axe;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Tool;
@@ -78,7 +78,7 @@ public class Items {
 				try {
 					Item item = (Item) field.get(new Items());
 					if(item == null) {
-						item = new Item(StringHelper.formatEnumName(field.getName()));
+						item = new Item(Utility.formatEnumName(field.getName()));
 						field.set(null, item);
 					}
 					items.put(item.getName(), item);
@@ -91,7 +91,7 @@ public class Items {
 			if(field.getType() == Double.TYPE && Modifier.isFinal(field.getModifiers())) {
 				try {
 					Double i = (Double) field.get(Double.class);
-					String name = StringHelper.formatEnumName(field.getName());
+					String name = Utility.formatEnumName(field.getName());
 					String materialName = name.split(" ")[1];
 					Pickaxe pickaxe = new Pickaxe(materialName + " Pickaxe", i);
 					items.put(pickaxe.getName(), pickaxe);

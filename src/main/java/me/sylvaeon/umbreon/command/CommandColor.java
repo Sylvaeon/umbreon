@@ -11,10 +11,7 @@ import java.util.Random;
 
 import javax.imageio.ImageIO;
 
-import me.sylvaeon.umbreon.helper.ColorHelper;
-import me.sylvaeon.umbreon.helper.ImageHelper;
-import me.sylvaeon.umbreon.helper.MathHelper;
-import me.sylvaeon.umbreon.helper.StringHelper;
+import me.sylvaeon.umbreon.Utility;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.TextChannel;
 
@@ -45,9 +42,9 @@ public class CommandColor extends Command {
 				}
 			}
 			else
-				colorArgs.add(ColorHelper.getColorFromCode(arg));
+				colorArgs.add(Utility.getColorFromCode(arg));
 		}
-		String fileName = "src/main/resources/colors/" + StringHelper.concatList(colorArgs);
+		String fileName = "src/main/resources/colors/" + Utility.concatList(colorArgs);
 		if(quad) fileName += ".quad";
 		if(tiles > 0) fileName += ".tiled" + tiles;
 		fileName = fileName.toLowerCase();
@@ -75,7 +72,7 @@ public class CommandColor extends Command {
 					for(int n = 0; n < colorArgs.size() - 1; n++) {
 						for(int x = 0; x < 256; x++) {
 							weight = (double) ((256 - 1) - x) / (256 - 1);
-							color = ColorHelper.averageColors(colors[n], colors[n+1], weight);
+							color = Utility.averageColors(colors[n], colors[n+1], weight);
 							for(int y = 0; y < height; y++) {
 								bufferedImage.setRGB(256 * n + x, y, color.getRGB());
 							}
@@ -88,10 +85,10 @@ public class CommandColor extends Command {
 				if(colorArgs.size() == 4) {
 					for(int x = 0; x < width; x++) {
 						for(int y = 0; y < height; y++) {
-							weights[0] = MathHelper.distance(x, y, 0, 255);
-							weights[1] = MathHelper.distance(x, y, 255, 255);
-							weights[2] = MathHelper.distance(x, y, 255, 0);
-							weights[3] = MathHelper.distance(x, y, 0, 0);
+							weights[0] = Utility.distance(x, y, 0, 255);
+							weights[1] = Utility.distance(x, y, 255, 255);
+							weights[2] = Utility.distance(x, y, 255, 0);
+							weights[3] = Utility.distance(x, y, 0, 0);
 							for(int i = 0; i < weights.length; i++) {
 								distances[i][256*x + y] = weights[i];
 							}
@@ -102,14 +99,14 @@ public class CommandColor extends Command {
 					}
 					for(int x = 0; x < width; x++) {
 						for(int y = 0; y < height; y++) {
-							weights[0] = MathHelper.distance(x, y, 0, 0);
-							weights[1] = MathHelper.distance(x, y, 0, 255);
-							weights[2] = MathHelper.distance(x, y, 255, 255);
-							weights[3] = MathHelper.distance(x, y, 255, 0);
+							weights[0] = Utility.distance(x, y, 0, 0);
+							weights[1] = Utility.distance(x, y, 0, 255);
+							weights[2] = Utility.distance(x, y, 255, 255);
+							weights[3] = Utility.distance(x, y, 255, 0);
 							for(int i = 0; i < weights.length; i++) {
 								weights[i] = weights[i] / distances[i][256*256 - 1];
 							}
-							color = ColorHelper.averageColors(colors, weights);
+							color = Utility.averageColors(colors, weights);
 							bufferedImage.setRGB(x, y, color.getRGB());
 						}
 					}
@@ -119,10 +116,10 @@ public class CommandColor extends Command {
 			    //AffineTransformOp op = new AffineTransformOp(transform, AffineTransformOp.TYPE_NEAREST_NEIGHBOR);
 			    //bufferedImage = op.filter(bufferedImage, null);
 			}
-			bufferedImage = ImageHelper.resize(bufferedImage, 256, 256);
+			bufferedImage = Utility.resize(bufferedImage, 256, 256);
 			if(tiles > 0) {
-				bufferedImage = ImageHelper.resize(bufferedImage, tiles, tiles);
-				bufferedImage = ImageHelper.resize(bufferedImage, 256, 256);
+				bufferedImage = Utility.resize(bufferedImage, tiles, tiles);
+				bufferedImage = Utility.resize(bufferedImage, 256, 256);
 			}
 			try {
 				ImageIO.write(bufferedImage, "png", file);

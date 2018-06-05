@@ -25,9 +25,6 @@ public class Players {
 	
 	public static void init() {
 		players = new HashMap<>();
-		for(Member member : Umbreon.guild.getMembers()) {
-			addPlayer(member);
-		}
 		File file = new File("src/main/resources/players/");
 		if(!file.exists()) {
 			file.mkdirs();
@@ -49,8 +46,10 @@ public class Players {
 		}
 	}
 	
-	private static void addPlayer(Member member) {
-		putPlayer(member, new Player(member.getUser().getName()));
+	private static Player addPlayer(Member member) {
+		Player player = new Player(member.getUser().getName());
+		putPlayer(member, player);
+		return player;
 	}
 	
 	public static Player getPlayer(Member member) {
@@ -68,17 +67,21 @@ public class Players {
 	}
 	
 	public static void loadPlayers() {
-		for(Map.Entry<Member, Player> entry : players.entrySet()) {
-			loadPlayer(entry.getKey());
+		for(Member member : Umbreon.guild.getMembers()) {
+			if(!member.getUser().isBot() && !member.getUser().isFake()) {
+				loadPlayer(member);
+			}
 		}
 	}
 	
 	public static void loadPlayer(Member member) {
-		Player player = getPlayer(member);
+		Player player = addPlayer(member);
 		File file = getDataFile(member);
 		JSONParser parser = new JSONParser();
 		if(!file.exists()) {
-			savePlayer(member);
+			player.getInventory().setTools(null, null);
+			savePlayer(member, false);
+			loadPlayer(member);
 		} else {
 			try {
 				Object obj = parser.parse(new FileReader(file));
@@ -106,11 +109,34 @@ public class Players {
 					int value = Math.toIntExact((long) lvls.get(key));
 					player.getSkillSet().getSkill(SkillType.valueOf(key)).setLvl(value);
 				}
-				JSONObject tools = (JSONObject) jsonObject.get("tools");
-				String pickaxe = (String) tools.get("pickaxe");
-				String axe = (String) tools.get("axe");
-				player.getInventory().setPickaxe((Pickaxe) Items.getItem(pickaxe));
-				player.getInventory().setAxe((Axe) Items.getItem(axe));
+
+				if(jsonObject.containsKey("tools")) {
+					JSONObject tools = (JSONObject) jsonObject.get("tools");
+					Object pickaxeObject = tools.get("pickaxe"), axeObject = tools.get("axe");
+					String pickaxeName, axeName;
+					Pickaxe pickaxe = null;
+					Axe axe = null;
+					if (pickaxeObject != null) {
+						pickaxeName = (String) tools.get("pickaxe");
+						if (pickaxeName == "null") {
+							pickaxe = null;
+						} else {
+							pickaxe = (Pickaxe) Items.getItem(pickaxeName);
+						}
+					}
+					if (axeObject != null) {
+						axeName = (String) tools.get("axe");
+						if (axeName == "null") {
+							axe = null;
+						} else {
+							axe = (Axe) Items.getItem(axeName);
+						}
+					}
+					player.getInventory().setTools(pickaxe, axe);
+				} else {
+					player.getInventory().initTools();
+				}
+
 			} catch (ParseException | IOException | NullPointerException e) {
 				e.printStackTrace();
 			}
@@ -119,11 +145,11 @@ public class Players {
 	
 	public static void savePlayers() {
 		for(Map.Entry<Member, Player> entry : players.entrySet()) {
-			savePlayer(entry.getKey());
+			savePlayer(entry.getKey(), true);
 		}
 	}
-	
-	public static void savePlayer(Member member) {
+
+	public static void savePlayer(Member member, boolean saveTools) {
 		Player player = getPlayer(member);
 		File file = getDataFile(member);
 		if(file.exists()) {
@@ -143,22 +169,34 @@ public class Players {
 		skills.put("lvls", lvls);
 		jsonObject.put("skills", skills);
 		JSONObject inventory = new JSONObject();
-		for(ItemStack itemStack : player.getInventory().getItemStacks()) {
+		for (ItemStack itemStack : player.getInventory().getItemStacks()) {
 			inventory.put(itemStack.getItem().getName(), itemStack.getAmount());
 		}
-		JSONObject tools = new JSONObject();
-		tools.put("pickaxe", player.getInventory().getPickaxe().getName());
-		tools.put("axe", player.getInventory().getAxe().getName());
-		jsonObject.put("tools", tools);
 		jsonObject.put("inventory", inventory);
+		if(saveTools) {
+			JSONObject tools = new JSONObject();
+			Pickaxe pickaxe = player.getInventory().getPickaxe();
+			if(pickaxe != null) {
+				tools.put("pickaxe", pickaxe.getName());
+			} else {
+				tools.put("pickaxe", "null");
+			}
+			Axe axe = player.getInventory().getAxe();
+			if(axe != null) {
+				tools.put("axe", axe.getName());
+			} else {
+				tools.put("axe", "null");
+			}
+			jsonObject.put("tools", tools);
+		}
 		try(FileWriter fileWriter = new FileWriter(file)) {
 			fileWriter.write(jsonObject.toJSONString());
 			fileWriter.flush();
 		} catch (IOException e) {
-		
+
 		}
 	}
-	
+
 	private static File getDataFile(Member member) {
 		return new File("src/main/resources/players/" + member.getUser().getId() + ".json");
 	}

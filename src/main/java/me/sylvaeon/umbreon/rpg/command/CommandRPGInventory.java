@@ -15,10 +15,16 @@ public class CommandRPGInventory extends CommandRPG {
 		Collection<ItemStack> inventory = player.getInventory().getItemStacks();
 		String str = "";
 		if(!inventory.isEmpty()) {
-			str += "\nItems:\n";
+			str += "\n" + member.getAsMention() + "'s Inventory (" + player.getInventory().getAmount() + "):\n";
 			for (ItemStack itemStack : inventory) {
-				str += itemStack.formatted() + "\n";
+				str += itemStack.formatted();
+				if(player.getInventory().isEquipped(itemStack.getItem())) {
+					str += " (Equipped)";
+				}
+				str += "\n";
 			}
+		} else {
+			str = member.getAsMention() + "'s Inventory is empty!";
 		}
 		textChannel.sendMessage(str).queue();
 	}
