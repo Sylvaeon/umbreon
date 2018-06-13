@@ -8,13 +8,13 @@ import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillSet;
 import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillType;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
 
 import java.awt.*;
 
 public class CommandRPGXp extends CommandRPG {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
+	public void onCall(String[] args, Member member, MessageChannel textChannel) {
 		Player player = Players.getPlayer(member);
 		EmbedBuilder embedBuilder = new EmbedBuilder();
 		embedBuilder.setColor(Color.MAGENTA);

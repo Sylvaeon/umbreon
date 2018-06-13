@@ -7,7 +7,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import me.sylvaeon.umbreon.music.GuildMusicManager;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -106,10 +106,10 @@ public class Utility {
 		return stringBuilder.toString();
 	}
 
-	public static void loadAndPlay(Member member, final TextChannel channel, final String searchTerm) {
+	public static void loadAndPlay(Member member, final MessageChannel channel, final String searchTerm) {
 		GuildMusicManager musicManager = Umbreon.getGuildAudioPlayer();
 
-		Umbreon.playerManager.loadItemOrdered(musicManager, searchTerm, new AudioLoadResultHandler() {
+		Umbreon.getPlayerManager().loadItemOrdered(musicManager, searchTerm, new AudioLoadResultHandler() {
 			@Override
 			public void trackLoaded(AudioTrack track) {
 				channel.sendMessage("Adding to queue " + track.getInfo().title).queue();
@@ -142,18 +142,18 @@ public class Utility {
 		musicManager.scheduler.queue(track);
 	}
 
-	public static void skipTrack(TextChannel channel) {
+	public static void skipTrack(MessageChannel channel) {
 		GuildMusicManager musicManager = Umbreon.getGuildAudioPlayer();
 		musicManager.scheduler.nextTrack();
 	}
 
-	public static void skipAllTracks(TextChannel channel) {
+	public static void skipAllTracks(MessageChannel channel) {
 		GuildMusicManager musicManager = Umbreon.getGuildAudioPlayer();
 		musicManager.scheduler.clearTrackQueue();
 	}
 
 	public static void joinVoiceChannel(Member member) {
-		if(!Umbreon.UMBREON.getVoiceState().inVoiceChannel()) {
+		if(!Umbreon.getUMBREON().getVoiceState().inVoiceChannel()) {
 			try {
 				VoiceChannel vc = member.getVoiceState().getChannel();
 				member.getGuild().getAudioManager().openAudioConnection(vc);
@@ -164,8 +164,8 @@ public class Utility {
 	}
 
 	public static void leaveVoiceChannel() {
-		if(Umbreon.UMBREON.getVoiceState().inVoiceChannel()) {
-			Umbreon.guild.getAudioManager().closeAudioConnection();
+		if(Umbreon.getUMBREON().getVoiceState().inVoiceChannel()) {
+			Umbreon.getGuild().getAudioManager().closeAudioConnection();
 		}
 	}
 

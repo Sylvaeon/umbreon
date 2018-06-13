@@ -5,7 +5,7 @@ import me.sylvaeon.umbreon.rpg.entity.player.Player;
 import me.sylvaeon.umbreon.rpg.entity.player.Players;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.awt.*;
@@ -14,7 +14,7 @@ import java.util.List;
 
 public class CommandRPGLeaderboard extends CommandRPG {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
+	public void onCall(String[] args, Member member, MessageChannel textChannel) {
 		List<Member> sortedList = new ArrayList<>(Utility.sortByValues(Players.players).keySet());
 		EmbedBuilder embedBuilder = new EmbedBuilder();
 		embedBuilder.setAuthor("\uD83D\uDC98\uD83E\uDDE1\uD83D\uDC9B\uD83D\uDC9A\uD83D\uDC99\uD83D\uDC9CLevel Leaderboard\uD83D\uDC9C\uD83D\uDC99\uD83D\uDC9A\uD83D\uDC9B\uD83E\uDDE1\uD83D\uDC98");

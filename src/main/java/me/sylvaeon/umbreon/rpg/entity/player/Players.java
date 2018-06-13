@@ -67,7 +67,7 @@ public class Players {
 	}
 	
 	public static void loadPlayers() {
-		for(Member member : Umbreon.guild.getMembers()) {
+		for(Member member : Umbreon.getGuild().getMembers()) {
 			if(!member.getUser().isBot() && !member.getUser().isFake()) {
 				loadPlayer(member);
 			}

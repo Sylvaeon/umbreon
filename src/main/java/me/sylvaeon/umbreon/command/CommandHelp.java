@@ -3,10 +3,7 @@ package me.sylvaeon.umbreon.command;
 import me.sylvaeon.umbreon.music.command.CommandMusic;
 import me.sylvaeon.umbreon.rpg.command.CommandRPG;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.entities.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,7 +11,7 @@ import java.util.List;
 
 public class CommandHelp extends Command {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
+	public void onCall(String[] args, Member member, MessageChannel textChannel) {
 		User user = member.getUser();
 		List<Command> normalCommands = new ArrayList<>();
 		List<Command> musicCommands = new ArrayList<>();

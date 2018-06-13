@@ -29,15 +29,15 @@ import java.util.Map;
 
 public class Umbreon extends ListenerAdapter {
     private static final String TOKEN = "NDQyODE5NDMzNTQ3ODI1MTUy.DdI0wg.k76KQG6xTf2Q22NdAW5_7_zU-oY";
-    public static JDA jda;
-    public static AudioPlayerManager playerManager;
-    public static Map<Long, GuildMusicManager> musicManagers;
-    public static Member CYNTHIA, UMBREON;
-	public static Guild guild;
-	public static Thread pulseThread;
-	public static boolean pulse = true;
-	public static boolean endPulse = false;
-	public static Map<User, TextChannel> privateChannels;
+    private static JDA jda;
+    private static AudioPlayerManager playerManager;
+   	private static Map<Long, GuildMusicManager> musicManagers;
+   	private static Member CYNTHIA, UMBREON;
+	private static Guild guild;
+	private static Thread pulseThread;
+	private static boolean pulse = true;
+	private static boolean endPulse = false;
+	private static Map<User, TextChannel> privateChannels;
 
     public static void main(String[] args) throws LoginException, InterruptedException {
 
@@ -134,7 +134,7 @@ public class Umbreon extends ListenerAdapter {
 
 	private void processMessage(Message message) {
     	String messageString = message.getContentRaw();
-    	TextChannel textChannel = message.getTextChannel();
+    	MessageChannel channel = message.getChannel();
     	User user = message.getAuthor();
     	Member member = message.getMember();
     	if(member == null) {
@@ -155,12 +155,12 @@ public class Umbreon extends ListenerAdapter {
 								args[i - 1] = split[i];
 							}
 						}
-						command.onCall(args, member, textChannel);
+						command.onCall(args, member, channel);
 					} else {
-						textChannel.sendMessage("Error: Invalid permissions").queue();
+						channel.sendMessage("Error: Invalid permissions").queue();
 					}
 				} else {
-					textChannel.sendMessage("Error: Not a valid command! Type $help for a list of commands").queue();
+					channel.sendMessage("Error: Not a valid command! Type $help for a list of commands").queue();
 				}
 			}
 			if (messageString.toLowerCase().contains("sylvan")) {
@@ -190,4 +190,91 @@ public class Umbreon extends ListenerAdapter {
 		}
 	}
 
+	public static String getTOKEN() {
+		return TOKEN;
+	}
+
+	public static JDA getJda() {
+		return jda;
+	}
+
+	public static void setJda(JDA jda) {
+		Umbreon.jda = jda;
+	}
+
+	public static AudioPlayerManager getPlayerManager() {
+		return playerManager;
+	}
+
+	public static void setPlayerManager(AudioPlayerManager playerManager) {
+		Umbreon.playerManager = playerManager;
+	}
+
+	public static Map<Long, GuildMusicManager> getMusicManagers() {
+		return musicManagers;
+	}
+
+	public static void setMusicManagers(Map<Long, GuildMusicManager> musicManagers) {
+		Umbreon.musicManagers = musicManagers;
+	}
+
+	public static Member getCYNTHIA() {
+		return CYNTHIA;
+	}
+
+	public static void setCYNTHIA(Member CYNTHIA) {
+		Umbreon.CYNTHIA = CYNTHIA;
+	}
+
+	public static Member getUMBREON() {
+		return UMBREON;
+	}
+
+	public static void setUMBREON(Member UMBREON) {
+		Umbreon.UMBREON = UMBREON;
+	}
+
+	public static Guild getGuild() {
+		return guild;
+	}
+
+	public static void setGuild(Guild guild) {
+		Umbreon.guild = guild;
+	}
+
+	public static Thread getPulseThread() {
+		return pulseThread;
+	}
+
+	public static void setPulseThread(Thread pulseThread) {
+		Umbreon.pulseThread = pulseThread;
+	}
+
+	public static boolean isPulse() {
+		return pulse;
+	}
+
+	public static void setPulse(boolean pulse) {
+		Umbreon.pulse = pulse;
+	}
+
+	public static void flipPulse() {
+    	Umbreon.pulse = !Umbreon.pulse;
+	}
+
+	public static boolean isEndPulse() {
+		return endPulse;
+	}
+
+	public static void setEndPulse(boolean endPulse) {
+		Umbreon.endPulse = endPulse;
+	}
+
+	public static Map<User, TextChannel> getPrivateChannels() {
+		return privateChannels;
+	}
+
+	public static void setPrivateChannels(Map<User, TextChannel> privateChannels) {
+		Umbreon.privateChannels = privateChannels;
+	}
 }

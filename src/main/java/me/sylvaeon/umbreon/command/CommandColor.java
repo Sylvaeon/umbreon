@@ -13,11 +13,11 @@ import javax.imageio.ImageIO;
 
 import me.sylvaeon.umbreon.Utility;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
 
 public class CommandColor extends Command {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
+	public void onCall(String[] args, Member member, MessageChannel textChannel) {
 		if(args.length == 0) {
 			
 			return;

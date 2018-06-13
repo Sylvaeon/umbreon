@@ -13,6 +13,7 @@ import me.sylvaeon.umbreon.rpg.item.Items;
 import me.sylvaeon.umbreon.rpg.item.drop.DropTable;
 import me.sylvaeon.umbreon.rpg.item.drop.ItemDrop;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
@@ -60,7 +61,7 @@ public class Player extends Entity implements Comparable<Player> {
 		return "Level up! (" + start + " -> " + end + ")";
 	}
 
-	private void gather(TextChannel textChannel, SkillType skillType, ItemDrop... drops) {
+	private void gather(MessageChannel textChannel, SkillType skillType, ItemDrop... drops) {
 		DropTable lootTable = new DropTable(drops);
 		List<Item> list = lootTable.getDrops();
 		int xp = 1;
@@ -79,14 +80,14 @@ public class Player extends Entity implements Comparable<Player> {
 	}
 
 	//Gathering
-	public void log(TextChannel textChannel) {
+	public void log(MessageChannel textChannel) {
 		gather(textChannel, SkillType.LOGGING,
 			new ItemDrop(Items.LOG, 1),
 			new ItemDrop(Items.BRANCH, 1, 2)
 		);
 	}
 
-	public void mine(TextChannel textChannel) {
+	public void mine(MessageChannel textChannel) {
 		double pickaxe = getInventory().getPickaxe().getToolLevel();
 		gather(textChannel, SkillType.MINING,
 			new ItemDrop(Items.FLINT_SHARD, 1, 2),
@@ -171,7 +172,7 @@ public class Player extends Entity implements Comparable<Player> {
 		return getLvl();
 	}
 
-	public void addSkillXp(TextChannel textChannel, SkillType skillType, int xp) {
+	public void addSkillXp(MessageChannel textChannel, SkillType skillType, int xp) {
 		int lvl = getSkillSet().getSkill(skillType).getLvl();
 		getSkillSet().addXp(skillType, xp);
 		if (getSkillSet().getSkill(skillType).getLvl() != lvl) {
@@ -199,7 +200,7 @@ public class Player extends Entity implements Comparable<Player> {
 		return recipeList;
 	}
 
-	public boolean craft(Recipe recipe, TextChannel textChannel) {
+	public boolean craft(Recipe recipe, MessageChannel textChannel) {
 		if (canCraft(recipe)) {
 			Inventory inventory = getInventory();
 			for (ItemStack itemStack : recipe.getInputs()) {
@@ -247,7 +248,7 @@ public class Player extends Entity implements Comparable<Player> {
 		addXp(1, textChannel);
 	}
 
-	public void addXp(int xp, TextChannel textChannel) {
+	public void addXp(int xp, MessageChannel textChannel) {
 		int lvl = getLvl();
 		this.xp += xp;
 		update();

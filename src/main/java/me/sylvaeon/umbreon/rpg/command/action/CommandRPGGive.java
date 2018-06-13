@@ -7,11 +7,11 @@ import me.sylvaeon.umbreon.rpg.entity.player.Players;
 import me.sylvaeon.umbreon.rpg.item.Item;
 import me.sylvaeon.umbreon.rpg.item.Items;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
 
 public class CommandRPGGive extends CommandRPG {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
+	public void onCall(String[] args, Member member, MessageChannel textChannel) {
 		try {
 			String arg = Utility.concatArray(args, ' ');
 			String[] quoteSeperated = arg.split("\"");

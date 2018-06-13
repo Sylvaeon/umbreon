@@ -1,17 +1,18 @@
 package me.sylvaeon.umbreon.command;
 
+import me.sylvaeon.umbreon.Umbreon;
 import me.sylvaeon.umbreon.Utility;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.VoiceChannel;
 
 import java.util.List;
 
 public class CommandMoveAllOpenMic extends Command {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
+	public void onCall(String[] args, Member member, MessageChannel textChannel) {
 		VoiceChannel voiceChannel = member.getVoiceState().getChannel();
-		List<VoiceChannel> channelList = textChannel.getGuild().getVoiceChannelsByName(Utility.concatArray(args, ' '), true);
+		List<VoiceChannel> channelList = Umbreon.getGuild().getVoiceChannelsByName(Utility.concatArray(args, ' '), true);
 		if(!channelList.isEmpty()) {
 			VoiceChannel target = channelList.get(0);
 			if (voiceChannel != null && target != null) {
