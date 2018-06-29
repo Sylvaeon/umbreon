@@ -1,4 +1,4 @@
-package me.sylvaeon.umbreon.rpg.entity.player;
+package me.sylvaeon.umbreon.rpg.world.entity.player;
 
 import me.sylvaeon.umbreon.rpg.item.Item;
 import me.sylvaeon.umbreon.rpg.item.ItemStack;
@@ -38,11 +38,8 @@ public class Inventory {
 	public boolean isEquipped(Item item) {
 		if(item == pickaxe) {
 			return true;
-		} else if(item == axe) {
-			return true;
-		}
-		return false;
-	}
+        } else return item == axe;
+    }
 
 	public boolean equipItem(Item item) {
 		if(item != null && hasItem(item)) {

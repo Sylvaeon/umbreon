@@ -1,4 +1,4 @@
-package me.sylvaeon.umbreon.rpg.entity;
+package me.sylvaeon.umbreon.rpg.world.entity;
 
 public abstract class Entity {
     protected String name;

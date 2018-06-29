@@ -1,11 +1,11 @@
-package me.sylvaeon.umbreon.rpg.entity.player;
+package me.sylvaeon.umbreon.rpg.world.entity.player;
 
 import me.sylvaeon.umbreon.Umbreon;
-import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillType;
 import me.sylvaeon.umbreon.rpg.item.ItemStack;
 import me.sylvaeon.umbreon.rpg.item.Items;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Axe;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
+import me.sylvaeon.umbreon.rpg.world.entity.player.skill.Skill;
 import net.dv8tion.jda.core.entities.Member;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -102,12 +102,12 @@ public class Players {
 				for (Iterator iterator = xps.keySet().iterator(); iterator.hasNext(); ) {
 					String key = (String) iterator.next();
 					int value = Math.toIntExact((long) xps.get(key));
-					player.getSkillSet().getSkill(SkillType.valueOf(key)).setXp(value);
+                    player.getSkillSet().getSkill(Skill.SkillType.valueOf(key)).setXp(value);
 				}
 				for (Iterator iterator = lvls.keySet().iterator(); iterator.hasNext(); ) {
 					String key = (String) iterator.next();
 					int value = Math.toIntExact((long) lvls.get(key));
-					player.getSkillSet().getSkill(SkillType.valueOf(key)).setLvl(value);
+                    player.getSkillSet().getSkill(Skill.SkillType.valueOf(key)).setLvl(value);
 				}
 
 				if(jsonObject.containsKey("tools")) {
@@ -161,7 +161,7 @@ public class Players {
 		JSONObject skills = new JSONObject();
 		JSONObject xps = new JSONObject();
 		JSONObject lvls = new JSONObject();
-		for(SkillType skillType : SkillType.values()) {
+        for (Skill.SkillType skillType : Skill.SkillType.values()) {
 			xps.put(skillType.name(), player.getSkillSet().getSkill(skillType).getXp());
 			lvls.put(skillType.name(), player.getSkillSet().getSkill(skillType).getLvl());
 		}

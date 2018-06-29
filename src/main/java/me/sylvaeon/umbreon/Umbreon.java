@@ -7,10 +7,10 @@ import me.sylvaeon.umbreon.command.Command;
 import me.sylvaeon.umbreon.command.Commands;
 import me.sylvaeon.umbreon.music.GuildMusicManager;
 import me.sylvaeon.umbreon.rpg.crafting.Recipes;
-import me.sylvaeon.umbreon.rpg.entity.enemy.Enemies;
-import me.sylvaeon.umbreon.rpg.entity.player.Player;
-import me.sylvaeon.umbreon.rpg.entity.player.Players;
 import me.sylvaeon.umbreon.rpg.item.Items;
+import me.sylvaeon.umbreon.rpg.world.World;
+import me.sylvaeon.umbreon.rpg.world.entity.player.Player;
+import me.sylvaeon.umbreon.rpg.world.entity.player.Players;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -23,7 +23,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.managers.Presence;
 
 import javax.security.auth.login.LoginException;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,13 +55,13 @@ public class Umbreon extends ListenerAdapter {
         AudioSourceManagers.registerLocalSource(playerManager);
 	
 		Items.init();
-		Enemies.init();
+        World.init();
 		Recipes.init();
 		Players.init();
 		Commands.init();
         Players.updatePeople();
 
-        pulseThread = new Thread() {
+        /*pulseThread = new Thread() {
             @Override
             public void run() {
                 try {
@@ -90,7 +89,7 @@ public class Umbreon extends ListenerAdapter {
             }
         };
         pulseThread.start();
-        System.out.println("Thread 2 Initialized");
+        System.out.println("Thread 2 Initialized");*/
     }
 
 	public synchronized static void quit() {

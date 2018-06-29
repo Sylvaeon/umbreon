@@ -1,11 +1,10 @@
 package me.sylvaeon.umbreon.rpg.command;
 
 import me.sylvaeon.umbreon.Utility;
-import me.sylvaeon.umbreon.rpg.entity.player.Player;
-import me.sylvaeon.umbreon.rpg.entity.player.Players;
-import me.sylvaeon.umbreon.rpg.entity.player.skill.Skill;
-import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillSet;
-import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillType;
+import me.sylvaeon.umbreon.rpg.world.entity.player.Player;
+import me.sylvaeon.umbreon.rpg.world.entity.player.Players;
+import me.sylvaeon.umbreon.rpg.world.entity.player.skill.Skill;
+import me.sylvaeon.umbreon.rpg.world.entity.player.skill.SkillSet;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
@@ -23,7 +22,7 @@ public class CommandRPGXp extends CommandRPG {
 		embedBuilder.addField("Character Level", Utility.getProgressBar(player.getLvl(), player.getXp(), player.getXpNeeded()), false);
 		SkillSet skillSet = player.getSkillSet();
 		Skill skill;
-		for(SkillType skillType : SkillType.values()) {
+        for (Skill.SkillType skillType : Skill.SkillType.values()) {
 			skill = skillSet.getSkill(skillType);
 			embedBuilder.addField(Utility.formatEnum(skillType) + " Level", Utility.getProgressBar(skill.getLvl(), skill.getXp(), skill.getXpNeeded()), true);
 		}

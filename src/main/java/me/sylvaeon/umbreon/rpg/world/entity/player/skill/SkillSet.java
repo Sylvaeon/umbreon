@@ -1,10 +1,10 @@
-package me.sylvaeon.umbreon.rpg.entity.player.skill;
+package me.sylvaeon.umbreon.rpg.world.entity.player.skill;
 
 import java.util.HashMap;
 import java.util.Map;
 
 public class SkillSet {
-	Map<SkillType, Skill> skills;
+    Map<Skill.SkillType, Skill> skills;
 	
 	public SkillSet() {
 		this.skills = new HashMap<>();
@@ -18,19 +18,19 @@ public class SkillSet {
 		}
 		initSkills();
 	}
-	
-	public Skill getSkill(SkillType skillType) {
+
+    public Skill getSkill(Skill.SkillType skillType) {
 		return skills.get(skillType);
 	}
-	
-	public void addXp(SkillType skillType, int xp) {
+
+    public void addXp(Skill.SkillType skillType, int xp) {
 		Skill skill = skills.get(skillType);
 		skill.addXp(xp);
 		skill.update();
 	}
 	
 	private void initSkills() {
-		for(SkillType type : SkillType.values()) {
+        for (Skill.SkillType type : Skill.SkillType.values()) {
 			skills.putIfAbsent(type, new Skill(type));
 		}
 	}

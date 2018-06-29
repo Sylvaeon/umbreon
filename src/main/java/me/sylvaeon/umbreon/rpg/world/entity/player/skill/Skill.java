@@ -1,6 +1,11 @@
-package me.sylvaeon.umbreon.rpg.entity.player.skill;
+package me.sylvaeon.umbreon.rpg.world.entity.player.skill;
 
 public class Skill {
+
+    public enum SkillType {
+        FORAGING, LOGGING, MINING
+    }
+
 	SkillType type;
 	int lvl;
 	int xp;
@@ -71,4 +76,6 @@ public class Skill {
 	public void addXp() {
 		this.xp++;
 	}
+
+
 }

@@ -1,5 +1,7 @@
 package me.sylvaeon.umbreon;
 
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
 import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
 import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
@@ -25,6 +27,42 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Utility {
 	private static JSONParser parser = new JSONParser();
+
+    public static <R extends Comparable, C extends Comparable, V> R getTableMaxRow(Table<R, C, V> table) {
+        R max = null;
+        for (Table.Cell<R, C, V> cell : table.cellSet()) {
+            if (cell.getRowKey().compareTo(max) > 0 || max == null) {
+                max = cell.getRowKey();
+            }
+        }
+        return max;
+    }
+
+    public static <R extends Comparable, C extends Comparable, V> C getTableMaxColumn(Table<R, C, V> table) {
+        C max = null;
+        for (Table.Cell<R, C, V> cell : table.cellSet()) {
+            if (cell.getColumnKey().compareTo(max) > 0 || max == null) {
+                max = cell.getColumnKey();
+            }
+        }
+        return max;
+    }
+
+    public static boolean inRange(double x, double min, double max) {
+        return (x < max && x >= min);
+    }
+
+    public static <T> Table<Integer, Integer, T> nestedListToTable(List<List<T>> lists) {
+        Table<Integer, Integer, T> table = HashBasedTable.create();
+        List<T> list;
+        for (int i = 0; i < lists.size(); i++) {
+            list = lists.get(i);
+            for (int j = 0; j < list.size(); j++) {
+                table.put(i, j, list.get(j));
+            }
+        }
+        return table;
+    }
 
 	public static String concatList(List<String> list) {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -323,4 +361,5 @@ public class Utility {
 		}
 		return finalArray;
 	}
+
 }

@@ -1,18 +1,17 @@
-package me.sylvaeon.umbreon.rpg.entity.player;
+package me.sylvaeon.umbreon.rpg.world.entity.player;
 
 import me.sylvaeon.umbreon.Utility;
 import me.sylvaeon.umbreon.rpg.crafting.Recipe;
 import me.sylvaeon.umbreon.rpg.crafting.Recipes;
-import me.sylvaeon.umbreon.rpg.entity.Entity;
-import me.sylvaeon.umbreon.rpg.entity.enemy.Enemy;
-import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillSet;
-import me.sylvaeon.umbreon.rpg.entity.player.skill.SkillType;
 import me.sylvaeon.umbreon.rpg.item.Item;
 import me.sylvaeon.umbreon.rpg.item.ItemStack;
 import me.sylvaeon.umbreon.rpg.item.Items;
 import me.sylvaeon.umbreon.rpg.item.drop.DropTable;
 import me.sylvaeon.umbreon.rpg.item.drop.ItemDrop;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
+import me.sylvaeon.umbreon.rpg.world.entity.Entity;
+import me.sylvaeon.umbreon.rpg.world.entity.player.skill.Skill;
+import me.sylvaeon.umbreon.rpg.world.entity.player.skill.SkillSet;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.Contract;
@@ -21,14 +20,13 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
-import java.util.concurrent.ThreadLocalRandom;
 
 public class Player extends Entity implements Comparable<Player> {
 
 	private int xp;
 	private int lvl;
 	private Inventory inventory;
+    private Home home;
 	private SkillSet skillSet;
 
 	public Player(String name) {
@@ -36,8 +34,9 @@ public class Player extends Entity implements Comparable<Player> {
 		this.name = name;
 		this.xp = 0;
 		this.lvl = 1;
-		this.skillSet = new SkillSet();
 		inventory = new Inventory();
+        home = new Home();
+        this.skillSet = new SkillSet();
 	}
 
 	@Contract(pure = true)
@@ -61,7 +60,15 @@ public class Player extends Entity implements Comparable<Player> {
 		return "Level up! (" + start + " -> " + end + ")";
 	}
 
-	private void gather(MessageChannel textChannel, SkillType skillType, ItemDrop... drops) {
+    //Gathering
+    public void log(MessageChannel textChannel) {
+        gather(textChannel, Skill.SkillType.LOGGING,
+                new ItemDrop(Items.LOG, 1),
+                new ItemDrop(Items.BRANCH, 1, 2)
+        );
+    }
+
+    private void gather(MessageChannel textChannel, Skill.SkillType skillType, ItemDrop... drops) {
 		DropTable lootTable = new DropTable(drops);
 		List<Item> list = lootTable.getDrops();
 		int xp = 1;
@@ -79,26 +86,16 @@ public class Player extends Entity implements Comparable<Player> {
 		}
 	}
 
-	//Gathering
-	public void log(MessageChannel textChannel) {
-		gather(textChannel, SkillType.LOGGING,
-			new ItemDrop(Items.LOG, 1),
-			new ItemDrop(Items.BRANCH, 1, 2)
-		);
-	}
+    public void addSkillXp(MessageChannel textChannel, Skill.SkillType skillType, int xp) {
+        int lvl = getSkillSet().getSkill(skillType).getLvl();
+        getSkillSet().addXp(skillType, xp);
+        if (getSkillSet().getSkill(skillType).getLvl() != lvl) {
+            textChannel.sendMessage(Utility.formatEnum(skillType) + " " + getLevelUpMessage(lvl, getSkillSet().getSkill(skillType).getLvl())).queue();
+            addXp((int) Math.floor(Math.sqrt(getSkillSet().getSkill(skillType).getLvl())), textChannel);
+        }
+    }
 
-	public void mine(MessageChannel textChannel) {
-		double pickaxe = getInventory().getPickaxe().getToolLevel();
-		gather(textChannel, SkillType.MINING,
-			new ItemDrop(Items.FLINT_SHARD, 1, 2),
-			new ItemDrop(Items.STONE, (pickaxe >= Pickaxe.MATERIAL_FLINT) ? 4 / 3 : 0),
-			new ItemDrop(Items.COPPER_ORE, (pickaxe >= Pickaxe.MATERIAL_STONE) ? 1 / 2 : 0),
-			new ItemDrop(Items.TIN_ORE, (pickaxe >= Pickaxe.MATERIAL_COPPER) ? 1 / 3 : 0),
-			new ItemDrop(Items.IRON_ORE, (pickaxe >= Pickaxe.MATERIAL_BRONZE) ? 1 / 4 : 0)
-		);
-	}
-
-	public void fight(Enemy enemy, TextChannel textChannel) {
+	/*public void fight(Animal enemy, TextChannel textChannel) {
 		int turn = 0;
 		double playerDamage, enemyDamage;
 		StringBuilder builder = new StringBuilder();
@@ -165,20 +162,24 @@ public class Player extends Entity implements Comparable<Player> {
 		builder.append("Your HP: ").append((int) getHealth()).append("/").append((int) getMaxHealth()).append("\n");
 		builder.append("Their HP: ").append((int) enemy.getHealth()).append("/").append((int) enemy.getMaxHealth()).append("\n");
 		return builder.toString();
-	}
+	}*/
 
 	@Override
 	public double getDmg() {
 		return getLvl();
 	}
 
-	public void addSkillXp(MessageChannel textChannel, SkillType skillType, int xp) {
-		int lvl = getSkillSet().getSkill(skillType).getLvl();
-		getSkillSet().addXp(skillType, xp);
-		if (getSkillSet().getSkill(skillType).getLvl() != lvl) {
-			textChannel.sendMessage(Utility.formatEnum(skillType) + " " + getLevelUpMessage(lvl, getSkillSet().getSkill(skillType).getLvl())).queue();
-			addXp((int) Math.floor(Math.sqrt(getSkillSet().getSkill(skillType).getLvl())), textChannel);
-		}
+    public void mine(MessageChannel textChannel) {
+        double pickaxe = getInventory().getPickaxe().getToolLevel();
+        gather(textChannel, Skill.SkillType.MINING,
+                new ItemDrop(Items.FLINT_SHARD, 1, 2),
+                new ItemDrop(Items.STONE, (pickaxe >= Pickaxe.MATERIAL_FLINT) ? 4 / 3 : 0),
+                new ItemDrop(Items.COPPER_ORE, (pickaxe >= Pickaxe.MATERIAL_STONE) ? 1 / 2 : 0),
+                new ItemDrop(Items.TIN_ORE, (pickaxe >= Pickaxe.MATERIAL_COPPER) ? 1 / 3 : 0),
+                new ItemDrop(Items.IRON_ORE, (pickaxe >= Pickaxe.MATERIAL_BRONZE) ? 1 / 4 : 0),
+                new ItemDrop(Items.NICKLE_ORE, (pickaxe >= Pickaxe.MATERIAL_IRON) ? 1 / 5 : 0),
+                new ItemDrop(Items.TITANIUM_ORE, (pickaxe >= Pickaxe.MATERIAL_STEEL) ? 1 / 6 : 0)
+        );
 	}
 
 	public boolean canCraft(Recipe recipe) {
