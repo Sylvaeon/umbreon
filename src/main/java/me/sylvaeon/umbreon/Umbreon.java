@@ -94,6 +94,7 @@ public class Umbreon extends ListenerAdapter {
 
 	public synchronized static void quit() {
 		Players.close();
+		World.close();
 		pulse = false;
 		endPulse = true;
 		try {

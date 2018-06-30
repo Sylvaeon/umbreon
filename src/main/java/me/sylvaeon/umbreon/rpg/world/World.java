@@ -13,6 +13,7 @@ import org.json.simple.parser.ParseException;
 
 import java.io.File;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -34,28 +35,14 @@ public class World {
         loadTiles();
     }
 
+    public static void close() {
+        saveTiles();
+    }
+
     private static void initSpecies() {
         initAnimalSpecies();
         initPlantSpecies();
         initTreeSpecies();
-    }
-
-    public static void loadTiles() {
-        JSONParser parser = new JSONParser();
-        if (!file.exists()) {
-            loadTile(0, 0);
-            saveTiles();
-        } else {
-            try {
-                Object object = parser.parse(new FileReader(file));
-                JSONObject jsonObject = (JSONObject) object;
-                for (Iterator iterator = jsonObject.keySet().iterator(); iterator.hasNext(); ) {
-                    String key = (String) iterator.next();
-                }
-            } catch (ParseException | IOException e) {
-                e.printStackTrace();
-            }
-        }
     }
 
     private static void initAnimalSpecies() {
@@ -154,7 +141,59 @@ public class World {
         }
     }
 
-   /* private static Tile JSONObjectToTile(JSONObject jsonObject) {
+    public static Tile loadTile(int x, int y) {
+        if (map.contains(x, y)) {
+            return map.get(x, y);
+        } else {
+            return generateTile();
+        }
+    }
+
+    public static void loadTiles() {
+        JSONParser parser = new JSONParser();
+        if (!file.exists()) {
+            loadTile(0, 0);
+            saveTiles();
+        } else {
+            try {
+                Object object = parser.parse(new FileReader(file));
+                JSONObject jsonObject = (JSONObject) object;
+                for (Iterator iterator = jsonObject.keySet().iterator(); iterator.hasNext(); ) {
+                    String key = (String) iterator.next();
+                    JSONObject value = (JSONObject) jsonObject.get(key);
+                    Tile tile = JSONObjectToTile(value);
+                    String[] split = key.split(",");
+                    int x = Integer.parseUnsignedInt(split[0]);
+                    int y = Integer.parseUnsignedInt(split[1]);
+                    map.put(x, y, tile);
+                }
+            } catch (ParseException | IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+
+    public static void saveTiles() {
+        if(file.exists()) {
+            file.delete();
+        }
+        JSONObject jsonObject = new JSONObject();
+        for(Table.Cell<Integer, Integer, Tile> cell : map.cellSet()) {
+            String key = cell.getRowKey() + "," + cell.getColumnKey();
+            JSONObject value = tileToJSONObject(cell.getValue());
+            jsonObject.put(key, value);
+        }
+        try(FileWriter fileWriter = new FileWriter(file)) {
+            fileWriter.write(jsonObject.toJSONString());
+            fileWriter.flush();
+        } catch (IOException e) {
+
+        }
+    }
+
+    private static Tile JSONObjectToTile(JSONObject jsonObject) {
         Set<AnimalSpecies> animals = new HashSet<>();
         Set<PlantSpecies> plants = new HashSet<>();
         JSONArray animalArray = (JSONArray) jsonObject.get("animals");
@@ -165,8 +204,29 @@ public class World {
         for(Object object : plantArray) {
             plants.add((PlantSpecies) object);
         }
-        return new Tile();
-    }*/
+       Feature feature = Feature.valueOf(((String) jsonObject.get("feature")).toUpperCase());
+       Biome biome = Biome.valueOf(((String) jsonObject.get("biome")).toUpperCase());
+       TreeSpecies treeSpecies = getTreeSpecies((String) jsonObject.get("tree"));
+       return new Tile(feature, biome, animals, plants, treeSpecies);
+    }
+
+    private static JSONObject tileToJSONObject(Tile tile) {
+        JSONObject jsonObject = new JSONObject();
+        JSONArray animals = new JSONArray();
+        for (AnimalSpecies species : tile.getAnimals()) {
+            animals.add(species.getName());
+        }
+        JSONArray plants = new JSONArray();
+        for (PlantSpecies species : tile.getPlants()) {
+            plants.add(species.getName());
+        }
+        jsonObject.put("biome", tile.getBiome().name());
+        jsonObject.put("feature", tile.getFeature().name());
+        jsonObject.put("animals", animals);
+        jsonObject.put("plants", plants);
+        jsonObject.put("tree", tile.getTreeSpecies());
+        return jsonObject;
+    }
 
     private static void initTreeSpecies() {
         treeSpecies = new HashMap<>();
@@ -196,18 +256,6 @@ public class World {
             }
             addTreeSpecies((String) list.get(0), standards);
         }
-    }
-
-    public static Tile loadTile(int x, int y) {
-        if (map.contains(x, y)) {
-            return map.get(x, y);
-        } else {
-            return generateTile();
-        }
-    }
-
-    public static void saveTiles() {
-
     }
 
     private static int maxListSize(List<List<Object>> lists) {
@@ -242,24 +290,6 @@ public class World {
 
     public static Tile generateTile() {
         return new Tile(Biome.getBiomeFromClimate(ThreadLocalRandom.current().nextInt(100), ThreadLocalRandom.current().nextInt(100)));
-    }
-
-    private static JSONObject tileToJSONObject(Tile tile) {
-        JSONObject jsonObject = new JSONObject();
-        JSONArray animals = new JSONArray();
-        for (AnimalSpecies species : tile.getAnimals()) {
-            animals.add(species.getName());
-        }
-        JSONArray plants = new JSONArray();
-        for (PlantSpecies species : tile.getPlants()) {
-            plants.add(species.getName());
-        }
-        jsonObject.put("biome", tile.getBiome().name());
-        jsonObject.put("feature", tile.getFeature().name());
-        jsonObject.put("animals", animals);
-        jsonObject.put("plants", plants);
-        jsonObject.put("tree", tile.getTreeSpecies());
-        return jsonObject;
     }
 
     public static AnimalSpecies getAnimalSpecies(String name) {

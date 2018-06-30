@@ -16,7 +16,7 @@ public class Tile {
     private TreeSpecies treeSpecies;
 
     public Tile(World.Biome biome) {
-        this.feature = World.Feature.ANY;
+        this.feature = null;
         this.biome = biome;
         this.animals = new HashSet<>();
         this.plants = new HashSet<>();
