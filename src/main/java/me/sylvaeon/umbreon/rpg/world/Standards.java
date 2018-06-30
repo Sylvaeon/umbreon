@@ -10,7 +10,7 @@ public class Standards {
     List<World.Biome> biomes;
 
     public Standards(World.Biome... biomes) {
-        this.feature = null;
+        this.feature = World.Feature.ANY;
         this.biomes = new LinkedList<>(Arrays.asList(biomes));
     }
 
@@ -19,7 +19,7 @@ public class Standards {
     }
 
     public boolean meetsStandards(Tile tile) {
-        return (feature == null || feature == tile.getFeature()) && biomes.contains(tile.getBiome());
+        return (feature == World.Feature.ANY || feature == tile.getFeature()) && biomes.contains(tile.getBiome());
     }
 
     public void removeBiome(String name) {

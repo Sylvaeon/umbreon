@@ -28,6 +28,11 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Utility {
 	private static JSONParser parser = new JSONParser();
 
+    public static int nextInt(Random random, int origin, int bound) {
+        int range = bound - origin;
+        return random.nextInt(range) + origin;
+    }
+
     public static <R extends Comparable, C extends Comparable, V> R getTableMaxRow(Table<R, C, V> table) {
         R max = null;
         for (Table.Cell<R, C, V> cell : table.cellSet()) {
