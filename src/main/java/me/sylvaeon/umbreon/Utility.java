@@ -28,6 +28,10 @@ import java.util.concurrent.ThreadLocalRandom;
 public class Utility {
 	private static JSONParser parser = new JSONParser();
 
+	public static <T> T randomCollectionElement(Collection<T> collection) {
+		return (T) collection.toArray()[ThreadLocalRandom.current().nextInt(collection.size())];
+	}
+
     public static int nextInt(Random random, int origin, int bound) {
         int range = bound - origin;
         return random.nextInt(range) + origin;

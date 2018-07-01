@@ -1,7 +1,6 @@
 package me.sylvaeon.umbreon.rpg.world;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,7 +9,7 @@ public class Standards {
     List<World.Biome> biomes;
 
     public Standards(World.Biome... biomes) {
-        this.feature = World.Feature.ANY;
+        this.feature = null;
         this.biomes = new LinkedList<>(Arrays.asList(biomes));
     }
 
@@ -19,7 +18,7 @@ public class Standards {
     }
 
     public boolean meetsStandards(Tile tile) {
-        return (feature == World.Feature.ANY || feature == tile.getFeature()) && biomes.contains(tile.getBiome());
+        return (feature == null || feature == tile.getFeature()) && biomes.contains(tile.getBiome());
     }
 
     public void removeBiome(String name) {
@@ -38,13 +37,19 @@ public class Standards {
 
     public void addBiome(String name) {
         if (name == "" || name == null) {
-
-        } else if (name.equalsIgnoreCase("All")) {
-            biomes.addAll(ALL().biomes);
-        } else {
-            addBiome(World.Biome.valueOf(name.toUpperCase()));
-        }
+			return;
+		} else if (name.equalsIgnoreCase("All")) {
+			biomes.addAll(ALL().biomes);
+		} else {
+			addBiome(World.Biome.valueOf(name.toUpperCase()));
+		}
     }
+
+    public void addBiome(World.Biome biome) {
+    	if(biome != null) {
+    		biomes.add(biome);
+		}
+	}
 
     public static Standards ALL() {
         Standards standards = new Standards(World.Biome.values());
@@ -52,14 +57,7 @@ public class Standards {
         return standards;
     }
 
-    public void addBiome(World.Biome... biomes) {
-        List<World.Biome> biomeList = Arrays.asList(biomes);
-        if (biomes != null && biomeList.isEmpty()) {
-            this.biomes.addAll(biomeList);
-        }
-    }
-
-    public Collection<World.Biome> getBiomes() {
+    public List<World.Biome> getBiomes() {
         return biomes;
     }
 

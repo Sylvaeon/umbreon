@@ -39,12 +39,11 @@ public class Umbreon extends ListenerAdapter {
 	private static Map<User, TextChannel> privateChannels;
 
     public static void main(String[] args) throws LoginException, InterruptedException {
-
         jda = new JDABuilder(AccountType.BOT).setToken(TOKEN).buildBlocking();
         jda.addEventListener(new Umbreon());
         Presence presence = jda.getPresence();
         presence.setGame(Game.playing("🖤Love You💛"));
-        guild = jda.getGuildById("310572543767478272");
+        guild = jda.getGuildById(462282550027616276L);
         CYNTHIA = guild.getMemberById(199523552850870272L);
         UMBREON = guild.getMemberById(442819433547825152L);
 
