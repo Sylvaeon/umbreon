@@ -5,10 +5,10 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Standards {
-    World.Feature feature;
-    List<World.Biome> biomes;
+    Tile.Feature feature;
+    List<Tile.Biome> biomes;
 
-    public Standards(World.Biome... biomes) {
+    public Standards(Tile.Biome... biomes) {
         this.feature = null;
         this.biomes = new LinkedList<>(Arrays.asList(biomes));
     }
@@ -25,11 +25,11 @@ public class Standards {
         if (name == "" || name == null) {
 
         } else {
-            removeBiome(World.Biome.valueOf(name.toUpperCase()));
+            removeBiome(Tile.Biome.valueOf(name.toUpperCase()));
         }
     }
 
-    public void removeBiome(World.Biome biome) {
+    public void removeBiome(Tile.Biome biome) {
         if (biome != null) {
             biomes.remove(biome);
         }
@@ -41,35 +41,35 @@ public class Standards {
 		} else if (name.equalsIgnoreCase("All")) {
 			biomes.addAll(ALL().biomes);
 		} else {
-			addBiome(World.Biome.valueOf(name.toUpperCase()));
+			addBiome(Tile.Biome.valueOf(name.toUpperCase()));
 		}
     }
 
-    public void addBiome(World.Biome biome) {
+    public void addBiome(Tile.Biome biome) {
     	if(biome != null) {
     		biomes.add(biome);
 		}
 	}
 
     public static Standards ALL() {
-        Standards standards = new Standards(World.Biome.values());
-        standards.removeBiome(World.Biome.OCEAN);
+        Standards standards = new Standards(Tile.Biome.values());
+        standards.removeBiome(Tile.Biome.OCEAN);
         return standards;
     }
 
-    public List<World.Biome> getBiomes() {
+    public List<Tile.Biome> getBiomes() {
         return biomes;
     }
 
-    public void setBiomes(List<World.Biome> biomes) {
+    public void setBiomes(List<Tile.Biome> biomes) {
         this.biomes = biomes;
     }
 
-    public World.Feature getFeature() {
+    public Tile.Feature getFeature() {
         return feature;
     }
 
-    public void setFeature(World.Feature feature) {
+    public void setFeature(Tile.Feature feature) {
         this.feature = feature;
     }
 
@@ -78,7 +78,7 @@ public class Standards {
         String ret = "";
         if (feature != null) ret += "feature:" + feature.name() + ";";
         ret += "biomes:[";
-        for (World.Biome biome : biomes) {
+        for (Tile.Biome biome : biomes) {
             ret += biome.name() + ",";
         }
         ret = ret.substring(0, ret.length() - 1);

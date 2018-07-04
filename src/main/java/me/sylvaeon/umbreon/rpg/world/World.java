@@ -20,9 +20,6 @@ import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static me.sylvaeon.umbreon.Utility.clamp;
-import static me.sylvaeon.umbreon.Utility.inRange;
-
 public class World {
 
 	public static Table<Integer, Integer, Tile> map;
@@ -30,8 +27,8 @@ public class World {
 	private static Map<String, AnimalSpecies> animalSpecies;
 	private static Map<String, PlantSpecies> plantSpecies;
 	private static Map<String, TreeSpecies> treeSpecies;
-	private static Table<String, Biome, Set<Species>> speciesByBiome;
-	private static Table<String, Feature, Set<Species>> speciesByFeature;
+	private static Table<String, Tile.Biome, Set<Species>> speciesByBiome;
+	private static Table<String, Tile.Feature, Set<Species>> speciesByFeature;
 
 	private static final String[] KEYS = new String[] {
 		"animals", "plants", "trees"
@@ -43,10 +40,10 @@ public class World {
 		map = HashBasedTable.create();
 
 		for(String key : KEYS) {
-			for(Biome biome : Biome.values()) {
+			for(Tile.Biome biome : Tile.Biome.values()) {
 				speciesByBiome.put(key, biome, new HashSet<>());
 			}
-			for(Feature feature : Feature.values()) {
+			for(Tile.Feature feature : Tile.Feature.values()) {
 				speciesByFeature.put(key, feature, new HashSet<>());
 			}
 		}
@@ -186,7 +183,7 @@ public class World {
 	}
 
 	public static Tile generateTile(int x, int y) {
-		Tile tile = new Tile(Biome.getBiomeFromClimate(ThreadLocalRandom.current().nextInt(100), ThreadLocalRandom.current().nextInt(100)));
+		Tile tile = new Tile(Tile.Biome.getBiomeFromClimate(ThreadLocalRandom.current().nextInt(100), ThreadLocalRandom.current().nextInt(100)));
 		map.put(x, y, tile);
 		return tile;
 	}
@@ -244,11 +241,11 @@ public class World {
 		for(Object object : plantArray) {
 			plants.add(getPlantSpecies((String) object));
 		}
-		Feature feature = null;
+		Tile.Feature feature = null;
 		if(jsonObject.containsKey("feature")) {
-			feature = Feature.valueOf(((String) jsonObject.get("feature")).toUpperCase());
+			feature = Tile.Feature.valueOf(((String) jsonObject.get("feature")).toUpperCase());
 		}
-		Biome biome = Biome.valueOf(((String) jsonObject.get("biome")).toUpperCase());
+		Tile.Biome biome = Tile.Biome.valueOf(((String) jsonObject.get("biome")).toUpperCase());
 		TreeSpecies treeSpecies = getTreeSpecies((String) jsonObject.get("tree"));
 		return new Tile(feature, biome, animals, plants, treeSpecies);
 	}
@@ -318,38 +315,42 @@ public class World {
 
 	public static void addAnimalSpecies(String name, boolean elemental, boolean nightOnly, boolean unique, boolean hostile, boolean canBeTamed, Standards standards) {
 		AnimalSpecies species = new AnimalSpecies(name, elemental, nightOnly, unique, hostile, canBeTamed, standards);
-		for(Biome biome : standards.biomes) {
+		for(Tile.Biome biome : standards.biomes) {
 			speciesByBiome.get("animals", biome).add(species);
 		}
-		if(standards.feature != null)
+		if(standards.feature != null) {
 			speciesByFeature.get("animals", standards.feature).add(species);
+		}
 		animalSpecies.putIfAbsent(name, species);
 	}
 
 	public static void addPlantSpecies(String name, PlantSpecies.PlantType type, Standards standards) {
 		PlantSpecies species = new PlantSpecies(name, type, standards);
-		for(Biome biome : standards.biomes)
+		for(Tile.Biome biome : standards.biomes) {
 			speciesByBiome.get("plants", biome).add(species);
-		if(standards.feature != null)
+		}
+		if(standards.feature != null) {
 			speciesByFeature.get("plants", standards.feature).add(species);
+		}
 		plantSpecies.putIfAbsent(name, species);
 	}
 
 	public static void addTreeSpecies(String name, Standards standards) {
 		TreeSpecies species = new TreeSpecies(name, standards);
-		for(Biome biome : standards.biomes) {
+		for(Tile.Biome biome : standards.biomes) {
 			speciesByBiome.get("trees", biome).add(species);
 		}
-		if(standards.feature != null)
+		if(standards.feature != null) {
 			speciesByFeature.get("trees", standards.feature).add(species);
+		}
 		treeSpecies.putIfAbsent(name, species);
 	}
 
-	private static World.Feature getFeatureFromName(String name) {
+	private static Tile.Feature getFeatureFromName(String name) {
 		if (name == "" || name == null) {
 			return null;
 		} else {
-			return World.Feature.valueOf(name.toUpperCase());
+			return Tile.Feature.valueOf(name.toUpperCase());
 		}
 	}
 
@@ -363,38 +364,6 @@ public class World {
 
 	public static TreeSpecies getTreeSpecies(String name) {
 		return treeSpecies.get(name);
-	}
-
-	public enum Biome {
-		TUNDRA(0, 20, 0, 40), TAIGA(0, 20, 40, 100), DESERT(20, 100, 0, 10),
-		GRASSLAND(20, 100, 10, 20), SHRUBLAND(20, 100, 20, 40), SAVANNA(20, 100, 40, 50),
-		FOREST(20, 100, 50, 70), SWAMP(20, 100, 70, 80), TROPICS(20, 100, 80, 100),
-		OCEAN(101, 101, 101, 101);
-
-		int temperatureMin, temperatureMax, precipitationMin, precipitationMax;
-
-		Biome(int temperatureMin, int temperatureMax, int precipitationMin, int precipitationMax) {
-			this.temperatureMin = temperatureMin;
-			this.temperatureMax = temperatureMax;
-			this.precipitationMin = precipitationMin;
-			this.precipitationMax = precipitationMax;
-		}
-
-		public static Biome getBiomeFromClimate(double temperature, double precipitation) {
-			temperature = clamp(temperature, 0, 100);
-			precipitation = clamp(precipitation, 0, 100);
-			for (Biome biome : values()) {
-				if (inRange(temperature, biome.temperatureMin, biome.temperatureMax) && inRange(precipitation, biome.precipitationMin, biome.precipitationMax)) {
-					return biome;
-				}
-			}
-			return null;
-		}
-
-	}
-
-	public enum Feature {
-		MOUNTAIN, RAVINE, RIVER, RUINS
 	}
 
 }

@@ -1,9 +1,10 @@
 package me.sylvaeon.umbreon.command;
 
+import me.sylvaeon.umbreon.Namable;
 import net.dv8tion.jda.core.entities.Member;
 import net.dv8tion.jda.core.entities.MessageChannel;
 
-public abstract class Command implements Comparable<Command> {
+public abstract class Command implements Comparable<Command>, Namable {
 	
 	private String name;
 	private String description;
