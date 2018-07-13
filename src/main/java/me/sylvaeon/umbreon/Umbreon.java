@@ -18,21 +18,20 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
-import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.managers.Presence;
 
 import javax.security.auth.login.LoginException;
+import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Umbreon extends ListenerAdapter {
+public final class Umbreon extends ListenerAdapter {
     private static final String TOKEN = "NDQyODE5NDMzNTQ3ODI1MTUy.DdI0wg.k76KQG6xTf2Q22NdAW5_7_zU-oY";
     private static JDA jda;
     private static AudioPlayerManager playerManager;
    	private static Map<Long, GuildMusicManager> musicManagers;
-   	private static Member CYNTHIA, UMBREON;
-	private static Guild guild;
+   	private static User CYNTHIA, UMBREON;
 	private static Thread pulseThread;
 	private static boolean pulse = true;
 	private static boolean endPulse = false;
@@ -43,10 +42,8 @@ public class Umbreon extends ListenerAdapter {
         jda.addEventListener(new Umbreon());
         Presence presence = jda.getPresence();
         presence.setGame(Game.playing("🖤Love You💛"));
-        guild = jda.getGuildById(462282550027616276L);
-        CYNTHIA = guild.getMemberById(199523552850870272L);
-        UMBREON = guild.getMemberById(442819433547825152L);
-
+        CYNTHIA = jda.getUserById(199523552850870272L);
+        UMBREON = jda.getSelfUser();
         musicManagers = new HashMap<>();
 		privateChannels = new HashMap<>();
         playerManager = new DefaultAudioPlayerManager();
@@ -60,14 +57,16 @@ public class Umbreon extends ListenerAdapter {
 		Commands.init();
         Players.updatePeople();
 
-        /*pulseThread = new Thread() {
+        pulseThread = new Thread() {
             @Override
             public void run() {
+            	Guild guild = jda.getGuildById(310572543767478272L);
+            	Role role = guild.getRoleById(440329428439007235L);
                 try {
                     for (int i = 0; i < Integer.MAX_VALUE; i++) {
                         if(endPulse) {
-                            Color color = Utility.getPinkGradientColor(7);
-							guild.getRolesByName("\uD83D\uDC51Owner", true).get(0).getManager().setColor(color).complete();
+                            Color color = new Color(0xEE82EE);
+							role.getManager().setColor(color).complete();
                             return;
                         } else {
                             if (i >= 14) {
@@ -75,7 +74,7 @@ public class Umbreon extends ListenerAdapter {
                             }
                             if(pulse) {
                                 Color color = Utility.getPinkGradientColor(i % 14);
-								guild.getRolesByName("\uD83D\uDC51Owner", true).get(0).getManager().setColor(color).queue();
+								role.getManager().setColor(color).queue();
                             }
                             synchronized (this) {
                                 wait(200);
@@ -88,7 +87,7 @@ public class Umbreon extends ListenerAdapter {
             }
         };
         pulseThread.start();
-        System.out.println("Thread 2 Initialized");*/
+        System.out.println("Thread 2 Initialized");
     }
 
 	public synchronized static void quit() {
@@ -107,7 +106,7 @@ public class Umbreon extends ListenerAdapter {
 		Umbreon.jda.shutdown();
 	}
 	
-    public static synchronized GuildMusicManager getGuildAudioPlayer() {
+    public static synchronized GuildMusicManager getGuildAudioPlayer(Guild guild) {
         long guildId = guild.getIdLong();
         GuildMusicManager musicManager = musicManagers.get(guildId);
 
@@ -126,21 +125,13 @@ public class Umbreon extends ListenerAdapter {
         processMessage(event.getMessage());
     }
 
-	@Override
-	public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
-		processMessage(event.getMessage());
-	}
-
 	private void processMessage(Message message) {
     	String messageString = message.getContentRaw();
-    	MessageChannel channel = message.getChannel();
+    	TextChannel channel = message.getTextChannel();
     	User user = message.getAuthor();
-    	Member member = message.getMember();
-    	if(member == null) {
-    		member = guild.getMember(user);
-		}
-    	Player player = Players.getPlayer(member);
-		if (!member.getUser().isBot()) {
+		Member member = message.getMember();
+    	Player player = Players.getPlayer(user);
+		if (!user.isBot()) {
 			if (messageString.startsWith("$")) {
 				messageString = messageString.substring(1);
 				String[] split = messageString.split(" ");
@@ -162,9 +153,9 @@ public class Umbreon extends ListenerAdapter {
 					channel.sendMessage("Error: Not a valid command! Type $help for a list of commands").queue();
 				}
 			}
-			if (messageString.toLowerCase().contains("sylvan")) {
+			if (messageString.toLowerCase().contains(badword)) {
 				PrivateChannel pc = member.getUser().openPrivateChannel().complete();
-				pc.sendMessage("Please remember the information in #announcements ty <3\n~Cynthia").queue();
+				pc.sendMessage("Watch your language :<\n~Cynthia").queue();
 				message.delete().complete();
 			}
 		}
@@ -172,12 +163,12 @@ public class Umbreon extends ListenerAdapter {
 
     @Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
-        Member member = event.getMember();
-        Players.initPlayer(member);
+        Players.initPlayer(event.getUser());
     }
 
     public static boolean addPrivateChannel(User user) {
     	String name = "rpg-" + user.getId();
+    	Guild guild = jda.getGuildById(310572543767478272L);
     	if(guild.getTextChannelsByName(name, true).isEmpty()) {
 			guild.getController().createTextChannel(name).complete();
 			TextChannel textChannel = guild.getTextChannelsByName(name, true).get(0);
@@ -197,83 +188,113 @@ public class Umbreon extends ListenerAdapter {
 		return jda;
 	}
 
-	public static void setJda(JDA jda) {
-		Umbreon.jda = jda;
-	}
-
 	public static AudioPlayerManager getPlayerManager() {
 		return playerManager;
-	}
-
-	public static void setPlayerManager(AudioPlayerManager playerManager) {
-		Umbreon.playerManager = playerManager;
 	}
 
 	public static Map<Long, GuildMusicManager> getMusicManagers() {
 		return musicManagers;
 	}
 
-	public static void setMusicManagers(Map<Long, GuildMusicManager> musicManagers) {
-		Umbreon.musicManagers = musicManagers;
-	}
-
-	public static Member getCYNTHIA() {
+	public static User getCYNTHIA() {
 		return CYNTHIA;
 	}
 
-	public static void setCYNTHIA(Member CYNTHIA) {
-		Umbreon.CYNTHIA = CYNTHIA;
-	}
-
-	public static Member getUMBREON() {
+	public static User getUMBREON() {
 		return UMBREON;
-	}
-
-	public static void setUMBREON(Member UMBREON) {
-		Umbreon.UMBREON = UMBREON;
-	}
-
-	public static Guild getGuild() {
-		return guild;
-	}
-
-	public static void setGuild(Guild guild) {
-		Umbreon.guild = guild;
 	}
 
 	public static Thread getPulseThread() {
 		return pulseThread;
 	}
 
-	public static void setPulseThread(Thread pulseThread) {
-		Umbreon.pulseThread = pulseThread;
-	}
-
 	public static boolean isPulse() {
 		return pulse;
 	}
 
-	public static void setPulse(boolean pulse) {
-		Umbreon.pulse = pulse;
-	}
-
 	public static void flipPulse() {
-    	Umbreon.pulse = !Umbreon.pulse;
+    	pulse = !pulse;
 	}
 
 	public static boolean isEndPulse() {
 		return endPulse;
 	}
 
-	public static void setEndPulse(boolean endPulse) {
-		Umbreon.endPulse = endPulse;
-	}
-
 	public static Map<User, TextChannel> getPrivateChannels() {
 		return privateChannels;
 	}
 
-	public static void setPrivateChannels(Map<User, TextChannel> privateChannels) {
-		Umbreon.privateChannels = privateChannels;
-	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	private static final String badword = "sylvan";
 }

@@ -1,25 +1,23 @@
 package me.sylvaeon.umbreon.rpg.crafting;
 
-import me.sylvaeon.umbreon.rpg.item.ItemStack;
+import me.sylvaeon.umbreon.rpg.item.ItemSet;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 public class Recipes {
-	private static List<Recipe> recipes;
+	public static List<Recipe> recipes;
 	
 	public static void init() {
 		recipes = new ArrayList<>();
-		
-
 	}
 	
 	private static void addRecipe(Recipe recipe) {
 		recipes.add(recipe);
 	}
 	
-	private static void addRecipe(List<ItemStack> outputs, List<ItemStack> inputs) {
+	private static void addRecipe(ItemSet outputs, ItemSet inputs) {
 		addRecipe(new Recipe(outputs, inputs));
 	}
 

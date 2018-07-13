@@ -1,19 +1,18 @@
 package me.sylvaeon.umbreon.rpg.world.entity.player;
 
+import me.sylvaeon.umbreon.Counter;
 import me.sylvaeon.umbreon.Utility;
 import me.sylvaeon.umbreon.rpg.crafting.Recipe;
 import me.sylvaeon.umbreon.rpg.crafting.Recipes;
 import me.sylvaeon.umbreon.rpg.item.Item;
-import me.sylvaeon.umbreon.rpg.item.ItemStack;
 import me.sylvaeon.umbreon.rpg.item.Items;
 import me.sylvaeon.umbreon.rpg.item.drop.DropTable;
 import me.sylvaeon.umbreon.rpg.item.drop.ItemDrop;
-import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
+import me.sylvaeon.umbreon.rpg.item.equipable.tool.Tool;
 import me.sylvaeon.umbreon.rpg.world.entity.Entity;
 import me.sylvaeon.umbreon.rpg.world.entity.player.skill.Skill;
 import me.sylvaeon.umbreon.rpg.world.entity.player.skill.SkillSet;
 import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;
 
@@ -21,21 +20,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class Player extends Entity implements Comparable<Player> {
+public class Player extends Entity {
+
+	private static final long serialVersionUID = 30L;
 
 	private int xp;
 	private int lvl;
 	private Inventory inventory;
-    private Home home;
 	private SkillSet skillSet;
+	private int xPos, yPos;
+	private double mana, manaMax;
 
 	public Player(String name) {
-		super();
-		this.name = name;
+		super(name);
 		this.xp = 0;
 		this.lvl = 1;
-		inventory = new Inventory();
-        home = new Home();
+		this.xPos = 0;
+		this.yPos = 0;
+		this.mana = 100;
+		this.manaMax = 100;
+		this.inventory = new Inventory();
         this.skillSet = new SkillSet();
 	}
 
@@ -63,8 +67,8 @@ public class Player extends Entity implements Comparable<Player> {
     //Gathering
     public void log(MessageChannel textChannel) {
         gather(textChannel, Skill.SkillType.LOGGING,
-                new ItemDrop(Items.LOG, 1),
-                new ItemDrop(Items.BRANCH, 1, 2)
+	        new ItemDrop(Items.LOG, 1),
+	        new ItemDrop(Items.BRANCH, 1, 2)
         );
     }
 
@@ -79,7 +83,7 @@ public class Player extends Entity implements Comparable<Player> {
 				msg += map.get(item) + "x " + item.getName() + "\n";
 			}
 			textChannel.sendMessage(msg).queue();
-			getInventory().addItems(list);
+			getInventory().add(list);
 			addSkillXp(textChannel, skillType, xp);
 		} else {
 			textChannel.sendMessage("No resources gathered").queue();
@@ -170,21 +174,15 @@ public class Player extends Entity implements Comparable<Player> {
 	}
 
     public void mine(MessageChannel textChannel) {
-        double pickaxe = getInventory().getPickaxe().getToolLevel();
+        double pickaxe = getInventory().toolSet.get(Tool.ToolType.PICKAXE).toolMaterial.getMaterialLevel();
         gather(textChannel, Skill.SkillType.MINING,
-                new ItemDrop(Items.FLINT_SHARD, 1, 2),
-                new ItemDrop(Items.STONE, (pickaxe >= Pickaxe.MATERIAL_FLINT) ? 4 / 3 : 0),
-                new ItemDrop(Items.COPPER_ORE, (pickaxe >= Pickaxe.MATERIAL_STONE) ? 1 / 2 : 0),
-                new ItemDrop(Items.TIN_ORE, (pickaxe >= Pickaxe.MATERIAL_COPPER) ? 1 / 3 : 0),
-                new ItemDrop(Items.IRON_ORE, (pickaxe >= Pickaxe.MATERIAL_BRONZE) ? 1 / 4 : 0),
-                new ItemDrop(Items.NICKLE_ORE, (pickaxe >= Pickaxe.MATERIAL_IRON) ? 1 / 5 : 0),
-                new ItemDrop(Items.TITANIUM_ORE, (pickaxe >= Pickaxe.MATERIAL_STEEL) ? 1 / 6 : 0)
+	        new ItemDrop(Items.FLINT_SHARD, 1, 2)
         );
 	}
 
 	public boolean canCraft(Recipe recipe) {
-		for (ItemStack itemStack : recipe.getInputs()) {
-			if (getInventory().getAmount(itemStack.getItem()) < itemStack.getAmount()) {
+		for (Map.Entry<Item, Counter> entry : recipe.getInputs().entrySet()) {
+			if (getInventory().get(entry.getKey()).count < entry.getValue().count) {
 				return false;
 			}
 		}
@@ -203,15 +201,16 @@ public class Player extends Entity implements Comparable<Player> {
 
 	public boolean craft(Recipe recipe, MessageChannel textChannel) {
 		if (canCraft(recipe)) {
-			Inventory inventory = getInventory();
-			for (ItemStack itemStack : recipe.getInputs()) {
-				inventory.subtractItem(itemStack.getItem(), itemStack.getAmount());
+			for(Map.Entry<Item, Counter> entry : recipe.inputs.entrySet()) {
+				getInventory().subtract(entry.getKey(), entry.getValue().count);
 			}
-			for (ItemStack itemStack : recipe.getOutputs()) {
-				inventory.addItem(itemStack.getItem(), itemStack.getAmount());
+			for(Map.Entry<Item, Counter> entry : recipe.outputs.entrySet()) {
+				getInventory().add(entry.getKey(), entry.getValue().count);
 			}
+			return true;
+		} else {
+			return false;
 		}
-		return canCraft(recipe);
 	}
 
 	public void update() {
@@ -241,14 +240,6 @@ public class Player extends Entity implements Comparable<Player> {
 		return xp;
 	}
 
-	public void setXp(int xp) {
-		this.xp = xp;
-	}
-
-	public void addXp(TextChannel textChannel) {
-		addXp(1, textChannel);
-	}
-
 	public void addXp(int xp, MessageChannel textChannel) {
 		int lvl = getLvl();
 		this.xp += xp;
@@ -262,10 +253,6 @@ public class Player extends Entity implements Comparable<Player> {
 		return lvl;
 	}
 
-	public void setLvl(int lvl) {
-		this.lvl = lvl;
-	}
-
 	public Inventory getInventory() {
 		return inventory;
 	}
@@ -274,16 +261,44 @@ public class Player extends Entity implements Comparable<Player> {
 		return skillSet;
 	}
 
-	public void setInventory(Inventory inventory) {
-		this.inventory = inventory;
+	public int getXPos() {
+		return xPos;
 	}
 
-	public void setSkillSet(SkillSet skillSet) {
-		this.skillSet = skillSet;
+	public void addX() {
+		xPos++;
+	}
+	
+	public void subtractX() {
+		xPos--;
+	}
+	
+	public int getYPos() {
+		return yPos;
+	}
+	
+	public void addY() {
+		yPos++;
+	}
+	
+	public void subtractY() {
+		yPos--;
+	}
+
+	public double getMana() {
+		return mana;
+	}
+
+	public double getManaMax() {
+		return manaMax;
 	}
 
 	@Override
-	public int compareTo(@NotNull Player o) {
-		return Integer.compare(getTotalXp(), o.getTotalXp());
+	public int compareTo(@NotNull Entity o) {
+		if(o instanceof Player) {
+			return Integer.compare(getTotalXp(), ((Player) o).getTotalXp());
+		} else {
+			return super.compareTo(o);
+		}
 	}
 }

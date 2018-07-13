@@ -1,30 +1,37 @@
 package me.sylvaeon.umbreon.rpg.command;
 
-import me.sylvaeon.umbreon.rpg.item.ItemStack;
+import me.sylvaeon.umbreon.Counter;
+import me.sylvaeon.umbreon.rpg.item.Item;
+import me.sylvaeon.umbreon.rpg.item.equipable.tool.Tool;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Player;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Players;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
-import java.util.Collection;
+import java.util.Map;
 
 public class CommandRPGInventory extends CommandRPG {
 	@Override
-	public void onCall(String[] args, Member member, MessageChannel textChannel) {
-		Player player = Players.getPlayer(member);
-		Collection<ItemStack> inventory = player.getInventory().getItemStacks();
+	public void onCall(String[] args, Member member, TextChannel textChannel) {
+		Player player = Players.getPlayer(member.getUser());
 		String str = "";
-		if(!inventory.isEmpty()) {
-			str += "\n" + member.getAsMention() + "'s Inventory (" + player.getInventory().getAmount() + "):\n";
-			for (ItemStack itemStack : inventory) {
-				str += itemStack.formatted();
-				if(player.getInventory().isEquipped(itemStack.getItem())) {
-					str += " (Equipped)";
+		player.getInventory().removeEmptys();
+		if(!player.getInventory().isEmpty()) {
+			str += "\n" + member.getAsMention() + "'s Inventory (" + player.getInventory().total() + "):\n";
+			for (Map.Entry<Item, Counter> entry : player.getInventory().entrySet()) {
+				Item item = entry.getKey();
+				long l = entry.getValue().count;
+				str += l + "x " + item.name;
+				if(item instanceof Tool) {
+					Tool tool = (Tool) item;
+					if(player.getInventory().isEquipped(tool)) {
+						str += " (Equipped)";
+					}
 				}
 				str += "\n";
 			}
 		} else {
-			str = member.getAsMention() + "'s Inventory is empty!";
+			str = member.getAsMention() + "'s ItemSet is empty!";
 		}
 		textChannel.sendMessage(str).queue();
 	}

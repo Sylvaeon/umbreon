@@ -1,18 +1,15 @@
 package me.sylvaeon.umbreon.rpg.item;
 
 import me.sylvaeon.umbreon.Utility;
-import me.sylvaeon.umbreon.rpg.item.equipable.tool.Axe;
-import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Tool;
 import me.sylvaeon.umbreon.rpg.item.equipable.weapon.Sword;
 
 import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.util.HashMap;
 import java.util.Map;
 
 public class Items {
-	private static Map<String, Item> items;
+	public static Map<String, Item> items;
 
 	/**Mining + Smithing**/
 	//Ores
@@ -81,29 +78,23 @@ public class Items {
 						item = new Item(Utility.formatEnumName(field.getName()));
 						field.set(null, item);
 					}
-					items.put(item.getName(), item);
+					addItem(item);
 				} catch (IllegalAccessException e) {
 					e.printStackTrace();
 				}
 			}
 		}
-		for(Field field : Tool.class.getDeclaredFields()) {
-			if(field.getType() == Double.TYPE && Modifier.isFinal(field.getModifiers())) {
-				try {
-					Double i = (Double) field.get(Double.class);
-					String name = Utility.formatEnumName(field.getName());
-					String materialName = name.split(" ")[1];
-					Pickaxe pickaxe = new Pickaxe(materialName + " Pickaxe", i);
-					items.put(pickaxe.getName(), pickaxe);
-					Axe axe = new Axe(materialName + " Axe", i);
-					items.put(axe.getName(), axe);
-				} catch (IllegalAccessException e) {
-					e.printStackTrace();
-				}
+		for(Tool.ToolMaterial toolMaterial : Tool.ToolMaterial.values()) {
+			for(Tool.ToolType toolType : Tool.ToolType.values()) {
+				addItem(new Tool(toolMaterial, toolType));
 			}
 		}
 	}
-	
+
+	public static void addItem(Item item) {
+		items.put(item.name, item);
+	}
+
 	public static Item getItem(String name) {
 		return items.get(name);
 	}

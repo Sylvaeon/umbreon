@@ -5,8 +5,8 @@ import me.sylvaeon.umbreon.Utility;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class DropAmount {
-    double chance;
-    int min, max;
+	public double chance;
+	public int min, max;
     public DropAmount(double chance) {
         this.chance = chance;
         this.min = -1;

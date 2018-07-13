@@ -1,44 +1,41 @@
 package me.sylvaeon.umbreon.rpg.item.equipable.tool;
 
 import me.sylvaeon.umbreon.rpg.item.Item;
+import me.sylvaeon.umbreon.rpg.item.equipable.Equipable;
 
-public abstract class Tool extends Item {
-	
-	public static final double MATERIAL_WOODEN = 0;
-	public static final double MATERIAL_FLINT = 1;
-	public static final double MATERIAL_STONE = 2;
-	public static final double MATERIAL_COPPER = 3;
-	public static final double MATERIAL_TIN = 3;
-	public static final double MATERIAL_BRONZE = 4;
-	public static final double MATERIAL_IRON = 5;
-	public static final double MATERIAL_NICKLE = 3;
-	public static final double MATERIAL_STEEL = 6;
-	public static final double MATERIAL_TITANIUM = 7;
-	public static final double MATERIAL_TITAN = 7;
-	public static final double MATERIAL_MYTHRIL = 8;
-	public static final double MATERIAL_DRAGONSTONE = 9;
-	public static final double MATERIAL_MAGISTEEL = 10;
-	
-	double toolLevel;
-	double toolBonus;
+import static me.sylvaeon.umbreon.Utility.formatEnum;
 
-	public Tool(String name, double toolLevel, double toolBonus) {
-		super(name);
-		this.toolLevel = toolLevel;
-		this.toolBonus = toolBonus;
+public class Tool extends Item implements Equipable {
+
+	public ToolMaterial toolMaterial;
+	public ToolType toolType;
+
+	public Tool(ToolMaterial toolMaterial, ToolType toolType) {
+		this.toolMaterial = toolMaterial;
+		this.toolType = toolType;
+		this.name = formatEnum(toolMaterial) + " " + formatEnum(toolType);
 	}
 
-	public Tool(String name, double toolLevel) {
-		super(name);
-		this.toolLevel = toolLevel;
-		this.toolBonus = 0;
+	public enum ToolMaterial {
+		WOOD(0, 0), FLINT(1, 0);
+
+		double materialLevel;
+		double materialBonus;
+		ToolMaterial(double toolLevel, double toolBonus) {
+			this.materialLevel = toolLevel;
+			this.materialBonus = toolBonus;
+		}
+
+		public double getMaterialLevel() {
+			return materialLevel;
+		}
+
+		public double getMaterialBonus() {
+			return materialBonus;
+		}
 	}
 
-	public double getToolLevel() {
-		return toolLevel;
-	}
-
-	public double getToolBonus() {
-		return toolBonus;
+	public enum ToolType {
+		PICKAXE, AXE, SHOVEL
 	}
 }

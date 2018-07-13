@@ -46,6 +46,9 @@ public final class Commands {
 		addCommand("save-players", new CommandRPGSavePlayers(), "Saves players");
 		addCommand("equip-item", new CommandRPGEquipItem(), "Equips an unquipped item", "equip");
 		addCommand("unequip-item", new CommandRPGUnequipItem(), "Unequipps an equipped item", "unequip");
+		addCommand("queue", new CommandMusicShowQueue(), "Show the current music queue");
+		addCommand("tile", new CommandRPGTile(), "View information of the current tile");
+		addCommand("move", new CommandRPGMove(), "Move");
 	}
 
 	public static Command getCommand(String name) {

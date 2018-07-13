@@ -4,7 +4,7 @@ import com.google.api.services.youtube.model.SearchResult;
 import me.sylvaeon.umbreon.Google;
 import me.sylvaeon.umbreon.Utility;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -13,8 +13,8 @@ import java.util.List;
 public class CommandMusicPlay extends CommandMusic {
 
     @Override
-    public void onCall(String[] args, Member member, MessageChannel textChannel) {
-        Utility.joinVoiceChannel(member);
+    public void onCall(String[] args, Member member, TextChannel textChannel) {
+        Utility.joinVoiceChannel(member.getGuild(), member.getVoiceState().getChannel());
         String searchTerm;
         if(args.length == 1) {
             searchTerm = args[0];

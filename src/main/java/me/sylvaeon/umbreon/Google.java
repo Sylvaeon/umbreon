@@ -28,7 +28,7 @@ import java.util.List;
 
 import static me.sylvaeon.umbreon.music.search.Auth.JSON_FACTORY;
 
-public class Google {
+public final class Google {
 
     private static YouTube youtube;
     private static final String SPREADSHEET_ID = "1rhAbVTAt4RNnb8ERAl-_JO0eh6gHmKzAQ4lTD_oHnpI";

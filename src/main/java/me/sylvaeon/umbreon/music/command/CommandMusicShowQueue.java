@@ -4,14 +4,14 @@ import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import me.sylvaeon.umbreon.Utility;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.awt.*;
 
 public class CommandMusicShowQueue extends CommandMusic {
     @Override
-    public void onCall(String[] args, Member member, MessageChannel textChannel) {
-        AudioTrack[] tracks = Utility.getAudioTrackArray();
+    public void onCall(String[] args, Member member, TextChannel textChannel) {
+        AudioTrack[] tracks = Utility.getAudioTrackArray(member.getGuild());
         EmbedBuilder embedBuilder = new EmbedBuilder();
         embedBuilder.setColor(Color.MAGENTA);
     }

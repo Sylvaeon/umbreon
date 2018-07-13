@@ -1,9 +1,12 @@
 package me.sylvaeon.umbreon.rpg.item;
 
-public class Item implements Comparable<Item> {
-	protected String name;
-	
-	protected ItemRarity itemRarity;
+import java.io.Serializable;
+
+public class Item implements Comparable<Item>, Serializable {
+	private static final long serialVersionUID = 2L;
+	public String name;
+
+	public ItemRarity itemRarity;
 
 	public Item() {
 		this.itemRarity = ItemRarity.BASIC;

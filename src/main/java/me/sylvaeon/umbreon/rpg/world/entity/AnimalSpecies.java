@@ -3,11 +3,11 @@ package me.sylvaeon.umbreon.rpg.world.entity;
 import me.sylvaeon.umbreon.rpg.world.Standards;
 
 public class AnimalSpecies extends Species {
-    private boolean elemental;
-    private boolean nightOnly;
-    private boolean unique;
-    private boolean hostile;
-    private boolean canBeTamed;
+	boolean elemental;
+	boolean nightOnly;
+	boolean unique;
+	boolean hostile;
+	boolean canBeTamed;
 
     public AnimalSpecies(String name, boolean elemental, boolean nightOnly, boolean unique, boolean hostile, boolean canBeTamed, Standards standards) {
         this.name = name;

@@ -4,25 +4,32 @@ import me.sylvaeon.umbreon.rpg.world.entity.AnimalSpecies;
 import me.sylvaeon.umbreon.rpg.world.entity.PlantSpecies;
 import me.sylvaeon.umbreon.rpg.world.entity.TreeSpecies;
 
-import java.util.HashSet;
+import java.awt.*;
+import java.io.Serializable;
 import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 
 import static me.sylvaeon.umbreon.Utility.clamp;
 import static me.sylvaeon.umbreon.Utility.inRange;
 
-public class Tile {
-    public Feature feature;
-	public Biome biome;
-	public Set<AnimalSpecies> animals;
-	public Set<PlantSpecies> plants;
-	public TreeSpecies treeSpecies;
+public class Tile implements Serializable {
+	private static final long serialVersionUID = 5L;
+
+    private Feature feature;
+	private Biome biome;
+	private Set<AnimalSpecies> animals;
+	private Set<PlantSpecies> plants;
+	private TreeSpecies treeSpecies;
 
     public Tile(Biome biome) {
         this.feature = null;
+	    if(ThreadLocalRandom.current().nextDouble() <= (1 / 3d)) {
+		    feature = Feature.values()[ThreadLocalRandom.current().nextInt(Feature.values().length)];
+	    }
         this.biome = biome;
-        this.animals = new HashSet<>();
-        this.plants = new HashSet<>();
+        this.animals = new TreeSet<>();
+        this.plants = new TreeSet<>();
         for (int i = 0; i < ThreadLocalRandom.current().nextInt(2, 5); i++) {
             animals.add(World.getRandomAnimalSpecies(this));
         }
@@ -30,6 +37,7 @@ public class Tile {
             plants.add(World.getRandomPlantSpecies(this));
         }
         this.treeSpecies = World.getRandomTreeSpecies(this);
+        
     }
 
     public Tile(Feature feature, Biome biome, Set<AnimalSpecies> animals, Set<PlantSpecies> plants, TreeSpecies treeSpecies) {
@@ -104,6 +112,32 @@ public class Tile {
 				}
 			}
 			return null;
+		}
+
+		public Color getColor() {
+			if(this == Biome.OCEAN) {
+				return new Color(0x0000FF);
+			} else if(this == Biome.TAIGA) {
+				return new Color(0x4a86e8);
+			} else if(this == Biome.TROPICS) {
+				return new Color(0x274e13);
+			} else if(this == Biome.SWAMP) {
+				return new Color(0x38761d);
+			} else if(this == Biome.FOREST) {
+				return new Color(0x00ff00);
+			} else if(this == Biome.SAVANNA) {
+				return new Color(0x783f04);
+			} else if(this == Biome.TUNDRA) {
+				return new Color(0x00ffff);
+			} else if(this == Biome.SHRUBLAND) {
+				return new Color(0x7f6000);
+			} else if(this == Biome.GRASSLAND) {
+				return new Color(0xff9900);
+			} else if(this == Biome.DESERT) {
+				return new Color(0xffff00);
+			} else {
+				return new Color(0x777777);
+			}
 		}
 
 	}

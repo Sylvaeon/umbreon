@@ -5,14 +5,14 @@ import me.sylvaeon.umbreon.rpg.crafting.Recipe;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Player;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Players;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.util.List;
 
 public class CommandRPGCraft extends CommandRPG {
 	@Override
-	public void onCall(String[] args, Member member, MessageChannel textChannel) {
-		Player player = Players.getPlayer(member);
+	public void onCall(String[] args, Member member, TextChannel textChannel) {
+		Player player = Players.getPlayer(member.getUser());
 		List<Recipe> recipeList = player.getAvailableRecipes();
 		if(args.length == 0) {
 			String string;

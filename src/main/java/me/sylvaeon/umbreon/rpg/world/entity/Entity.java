@@ -1,12 +1,33 @@
 package me.sylvaeon.umbreon.rpg.world.entity;
 
-public abstract class Entity {
-    protected String name;
-    protected double health, maxHealth;
+import org.jetbrains.annotations.NotNull;
 
-    protected Entity() {
+import java.io.Serializable;
+
+public abstract class Entity implements Serializable, Comparable<Entity> {
+
+	private static final long serialVersionUID = 3L;
+
+	private String name;
+	private double health, maxHealth;
+
+	public Entity() {
         this.maxHealth = 100;
         this.health = maxHealth;
+    }
+
+    public Entity(String name) {
+		this.name = name;
+	    this.maxHealth = 100;
+	    this.health = maxHealth;
+    }
+
+    public void updateHealth() {
+		if(health > maxHealth) {
+			health = maxHealth;
+		} else if(health < 0) {
+			health = 0;
+		}
     }
 
     public boolean dead() {
@@ -38,11 +59,13 @@ public abstract class Entity {
     }
     
     public double getHealth() {
+	    updateHealth();
         return health;
     }
 
     public void setHealth(double health) {
         this.health = health;
+        updateHealth();
     }
 
     public double getMaxHealth() {
@@ -52,4 +75,9 @@ public abstract class Entity {
     public void setMaxHealth(double maxHealth) {
         this.maxHealth = maxHealth;
     }
+	
+	@Override
+	public int compareTo(@NotNull Entity o) {
+		return name.compareTo(o.name);
+	}
 }

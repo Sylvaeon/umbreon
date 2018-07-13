@@ -1,27 +1,16 @@
 package me.sylvaeon.umbreon.rpg.world.entity.player;
 
+import me.sylvaeon.umbreon.Saving;
 import me.sylvaeon.umbreon.Umbreon;
-import me.sylvaeon.umbreon.rpg.item.ItemStack;
-import me.sylvaeon.umbreon.rpg.item.Items;
-import me.sylvaeon.umbreon.rpg.item.equipable.tool.Axe;
-import me.sylvaeon.umbreon.rpg.item.equipable.tool.Pickaxe;
-import me.sylvaeon.umbreon.rpg.world.entity.player.skill.Skill;
-import net.dv8tion.jda.core.entities.Member;
-import org.json.simple.JSONObject;
-import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
+import net.dv8tion.jda.core.entities.User;
 
 import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 
 public class Players {
-	public static Map<Member, Player> players;
+	public static Map<User, Player> players;
 	
 	public static void init() {
 		players = new HashMap<>();
@@ -36,24 +25,18 @@ public class Players {
 		savePlayers();
 	}
 	
-	public static void initPlayer(Member member) {
-		putPlayer(member, new Player(member.getUser().getName()));
+	public static void initPlayer(User user) {
+		putPlayer(user, new Player(user.getName()));
 	}
 
-	private static void putPlayer(Member member, Player player) {
-		if(!member.getUser().isBot() && !member.getUser().isFake()) {
-			players.put(member, player);
+	private static void putPlayer(User user, Player player) {
+		if(!user.isBot() && !user.isFake()) {
+			players.put(user, player);
 		}
 	}
 	
-	private static Player addPlayer(Member member) {
-		Player player = new Player(member.getUser().getName());
-		putPlayer(member, player);
-		return player;
-	}
-	
-	public static Player getPlayer(Member member) {
-		return players.get(member);
+	public static Player getPlayer(User user) {
+		return players.get(user);
 	}
 	
 	private static Collection<Player> getPlayers() {
@@ -65,140 +48,39 @@ public class Players {
 			player.update();
 		}
 	}
-	
-	public static void loadPlayers() {
-		for(Member member : Umbreon.getGuild().getMembers()) {
-			if(!member.getUser().isBot() && !member.getUser().isFake()) {
-				loadPlayer(member);
-			}
-		}
+
+	private static String filename(User user) {
+		return "src/main/resources/players/" + user.getId() + ".player";
 	}
-	
-	public static void loadPlayer(Member member) {
-		Player player = addPlayer(member);
-		File file = getDataFile(member);
-		JSONParser parser = new JSONParser();
-		if(!file.exists()) {
-			player.getInventory().setTools(null, null);
-			savePlayer(member, false);
-			loadPlayer(member);
+
+	public static void loadPlayer(User user) {
+		Object object = Saving.readObject(filename(user));
+		Player player;
+		if(object == null) {
+			player = new Player(user.getName());
 		} else {
-			try {
-				Object obj = parser.parse(new FileReader(file));
-				JSONObject jsonObject = (JSONObject) obj;
-				int lvl = Math.toIntExact((long) jsonObject.get("lvl"));
-				player.setLvl(lvl);
-				int xp = Math.toIntExact((long) jsonObject.get("xp"));
-				player.setXp(xp);
-				JSONObject inventory = (JSONObject) jsonObject.get("inventory");
-				for (Iterator iterator = inventory.keySet().iterator(); iterator.hasNext(); ) {
-					String key = (String) iterator.next();
-					int value = Math.toIntExact((long) inventory.get(key));
-					player.getInventory().addItem(Items.getItem(key), value);
-				}
-				JSONObject skills = (JSONObject) jsonObject.get("skills");
-				JSONObject xps = (JSONObject) skills.get("xps");
-				JSONObject lvls = (JSONObject) skills.get("lvls");
-				for (Iterator iterator = xps.keySet().iterator(); iterator.hasNext(); ) {
-					String key = (String) iterator.next();
-					int value = Math.toIntExact((long) xps.get(key));
-                    player.getSkillSet().getSkill(Skill.SkillType.valueOf(key)).setXp(value);
-				}
-				for (Iterator iterator = lvls.keySet().iterator(); iterator.hasNext(); ) {
-					String key = (String) iterator.next();
-					int value = Math.toIntExact((long) lvls.get(key));
-                    player.getSkillSet().getSkill(Skill.SkillType.valueOf(key)).setLvl(value);
-				}
-
-				if(jsonObject.containsKey("tools")) {
-					JSONObject tools = (JSONObject) jsonObject.get("tools");
-					Object pickaxeObject = tools.get("pickaxe"), axeObject = tools.get("axe");
-					String pickaxeName, axeName;
-					Pickaxe pickaxe = null;
-					Axe axe = null;
-					if (pickaxeObject != null) {
-						pickaxeName = (String) tools.get("pickaxe");
-						if (pickaxeName == "null") {
-							pickaxe = null;
-						} else {
-							pickaxe = (Pickaxe) Items.getItem(pickaxeName);
-						}
-					}
-					if (axeObject != null) {
-						axeName = (String) tools.get("axe");
-						if (axeName == "null") {
-							axe = null;
-						} else {
-							axe = (Axe) Items.getItem(axeName);
-						}
-					}
-					player.getInventory().setTools(pickaxe, axe);
-				} else {
-					player.getInventory().initTools();
-				}
-
-			} catch (ParseException | IOException | NullPointerException e) {
-				e.printStackTrace();
-			}
+			player = (Player) object;
 		}
+		putPlayer(user, player);
 	}
-	
+
+	public static void savePlayer(User user) {
+		Player player = getPlayer(user);
+		Saving.saveObject(player, filename(user));
+	}
+
 	public static void savePlayers() {
-		for(Map.Entry<Member, Player> entry : players.entrySet()) {
-			savePlayer(entry.getKey(), true);
+		for(Map.Entry<User, Player> entry : players.entrySet()) {
+			savePlayer(entry.getKey());
 		}
 	}
 
-	public static void savePlayer(Member member, boolean saveTools) {
-		Player player = getPlayer(member);
-		File file = getDataFile(member);
-		if(file.exists()) {
-			file.delete();
-		}
-		JSONObject jsonObject = new JSONObject();
-		jsonObject.put("lvl", player.getLvl());
-		jsonObject.put("xp", player.getXp());
-		JSONObject skills = new JSONObject();
-		JSONObject xps = new JSONObject();
-		JSONObject lvls = new JSONObject();
-        for (Skill.SkillType skillType : Skill.SkillType.values()) {
-			xps.put(skillType.name(), player.getSkillSet().getSkill(skillType).getXp());
-			lvls.put(skillType.name(), player.getSkillSet().getSkill(skillType).getLvl());
-		}
-		skills.put("xps", xps);
-		skills.put("lvls", lvls);
-		jsonObject.put("skills", skills);
-		JSONObject inventory = new JSONObject();
-		for (ItemStack itemStack : player.getInventory().getItemStacks()) {
-			inventory.put(itemStack.getItem().getName(), itemStack.getAmount());
-		}
-		jsonObject.put("inventory", inventory);
-		if(saveTools) {
-			JSONObject tools = new JSONObject();
-			Pickaxe pickaxe = player.getInventory().getPickaxe();
-			if(pickaxe != null) {
-				tools.put("pickaxe", pickaxe.getName());
-			} else {
-				tools.put("pickaxe", "null");
+	public static void loadPlayers() {
+		for(User user : Umbreon.getJda().getUsers()) {
+			if(!user.isBot() && !user.isFake()) {
+				loadPlayer(user);
 			}
-			Axe axe = player.getInventory().getAxe();
-			if(axe != null) {
-				tools.put("axe", axe.getName());
-			} else {
-				tools.put("axe", "null");
-			}
-			jsonObject.put("tools", tools);
-		}
-		try(FileWriter fileWriter = new FileWriter(file)) {
-			fileWriter.write(jsonObject.toJSONString());
-			fileWriter.flush();
-		} catch (IOException e) {
-
 		}
 	}
 
-	private static File getDataFile(Member member) {
-		return new File("src/main/resources/players/" + member.getUser().getId() + ".json");
-	}
-	
 }

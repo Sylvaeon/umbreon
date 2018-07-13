@@ -1,55 +1,41 @@
 package me.sylvaeon.umbreon.rpg.crafting;
 
-import me.sylvaeon.umbreon.rpg.item.ItemStack;
+import me.sylvaeon.umbreon.Counter;
+import me.sylvaeon.umbreon.rpg.item.Item;
+import me.sylvaeon.umbreon.rpg.item.ItemSet;
 
-import java.util.List;
+import java.util.Map;
 
 public class Recipe {
-	List<ItemStack> outputs;
-	List<ItemStack> inputs;
 
-	public Recipe(List<ItemStack> outputs, List<ItemStack> inputs) {
-		this.outputs = outputs;
+	public ItemSet inputs;
+	public ItemSet outputs;
+
+	public Recipe(ItemSet inputs, ItemSet outputs) {
 		this.inputs = inputs;
+		this.outputs = outputs;
 	}
 
-
-	public List<ItemStack> getOutputs() {
-		return outputs;
-	}
-	
-	public List<ItemStack> getInputs() {
+	public ItemSet getInputs() {
 		return inputs;
 	}
-	
+
+	public ItemSet getOutputs() {
+		return outputs;
+	}
+
 	@Override
 	public String toString() {
 		String string = "";
-		for(ItemStack itemStack : inputs) {
-			string += itemStack.toString() + ", ";
+		for(Map.Entry<Item, Counter> entry : inputs.entrySet()) {
+			string +=  + entry.getValue().count + "x" + entry.getKey().name + ", ";
 		}
 		string = string.replaceAll(", $", "");
 		string += " -> ";
-		for(ItemStack itemStack : outputs) {
-			string += itemStack.toString() + ", ";
+		for(Map.Entry<Item, Counter> entry : outputs.entrySet()) {
+			string +=  + entry.getValue().count + "x" + entry.getKey().name + ", ";
 		}
 		string = string.replaceAll(", $", "");
-		return string;
-	}
-	
-	public String outputsAsString() {
-		String string = "";
-		for(ItemStack itemStack : outputs) {
-			string += itemStack.toString() + "\n";
-		}
-		return string;
-	}
-	
-	public String inputsAsString() {
-		String string = "";
-		for(ItemStack itemStack : inputs) {
-			string += itemStack.toString() + "\n";
-		}
 		return string;
 	}
 	

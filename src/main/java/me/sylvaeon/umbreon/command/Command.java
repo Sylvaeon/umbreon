@@ -1,10 +1,9 @@
 package me.sylvaeon.umbreon.command;
 
-import me.sylvaeon.umbreon.Namable;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
-public abstract class Command implements Comparable<Command>, Namable {
+public abstract class Command implements Comparable<Command> {
 	
 	private String name;
 	private String description;
@@ -14,7 +13,7 @@ public abstract class Command implements Comparable<Command>, Namable {
 		return false;
 	}
 	
-	public abstract void onCall(String[] args, Member member, MessageChannel textChannel);
+	public abstract void onCall(String[] args, Member member, TextChannel textChannel);
 
 	@Override
 	public int compareTo(Command o) {

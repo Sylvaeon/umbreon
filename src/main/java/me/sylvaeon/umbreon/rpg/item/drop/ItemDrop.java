@@ -3,8 +3,8 @@ package me.sylvaeon.umbreon.rpg.item.drop;
 import me.sylvaeon.umbreon.rpg.item.Item;
 
 public class ItemDrop {
-    Item drop;
-    DropAmount amount;
+	public  Item drop;
+	public DropAmount amount;
 
     public ItemDrop(Item drop, int min, int max) {
     	this.drop = drop;

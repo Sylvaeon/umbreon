@@ -8,9 +8,7 @@ import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrackInfo;
 import me.sylvaeon.umbreon.music.GuildMusicManager;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
-import net.dv8tion.jda.core.entities.VoiceChannel;
+import net.dv8tion.jda.core.entities.*;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
@@ -25,7 +23,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
-public class Utility {
+public final class Utility {
 	private static JSONParser parser = new JSONParser();
 
 	public static <T> T randomCollectionElement(Collection<T> collection) {
@@ -154,7 +152,7 @@ public class Utility {
 	}
 
 	public static void loadAndPlay(Member member, final MessageChannel channel, final String searchTerm) {
-		GuildMusicManager musicManager = Umbreon.getGuildAudioPlayer();
+		GuildMusicManager musicManager = Umbreon.getGuildAudioPlayer(member.getGuild());
 
 		Umbreon.getPlayerManager().loadItemOrdered(musicManager, searchTerm, new AudioLoadResultHandler() {
 			@Override
@@ -189,35 +187,35 @@ public class Utility {
 		musicManager.scheduler.queue(track);
 	}
 
-	public static void skipTrack(MessageChannel channel) {
-		GuildMusicManager musicManager = Umbreon.getGuildAudioPlayer();
+	public static void skipTrack(TextChannel channel) {
+		GuildMusicManager musicManager = Umbreon.getGuildAudioPlayer(channel.getGuild());
 		musicManager.scheduler.nextTrack();
 	}
 
-	public static void skipAllTracks(MessageChannel channel) {
-		GuildMusicManager musicManager = Umbreon.getGuildAudioPlayer();
+	public static void skipAllTracks(TextChannel channel) {
+		GuildMusicManager musicManager = Umbreon.getGuildAudioPlayer(channel.getGuild());
 		musicManager.scheduler.clearTrackQueue();
 	}
 
-	public static void joinVoiceChannel(Member member) {
-		if(!Umbreon.getUMBREON().getVoiceState().inVoiceChannel()) {
+	public static void joinVoiceChannel(Guild guild, VoiceChannel voiceChannel) {
+		Member umbreon = guild.getMember(Umbreon.getUMBREON());
+		if(!umbreon.getVoiceState().inVoiceChannel()) {
 			try {
-				VoiceChannel vc = member.getVoiceState().getChannel();
-				member.getGuild().getAudioManager().openAudioConnection(vc);
+				guild.getAudioManager().openAudioConnection(voiceChannel);
 			} catch (Exception e) {
 
 			}
 		}
 	}
 
-	public static void leaveVoiceChannel() {
-		if(Umbreon.getUMBREON().getVoiceState().inVoiceChannel()) {
-			Umbreon.getGuild().getAudioManager().closeAudioConnection();
+	public static void leaveVoiceChannel(Guild guild) {
+		if(guild.getMember(Umbreon.getUMBREON()).getVoiceState().inVoiceChannel()) {
+			guild.getAudioManager().closeAudioConnection();
 		}
 	}
 
-	public static AudioTrack[] getAudioTrackArray() {
-		GuildMusicManager manager = Umbreon.getGuildAudioPlayer();
+	public static AudioTrack[] getAudioTrackArray(Guild guild) {
+		GuildMusicManager manager = Umbreon.getGuildAudioPlayer(guild);
 		AudioTrack[] audioTracks = new AudioTrack[manager.scheduler.getQueue().size() + 1];
 		AudioTrack[] queueArray = manager.scheduler.getQueueArray();
 		audioTracks[0] = manager.player.getPlayingTrack().makeClone();
@@ -227,8 +225,8 @@ public class Utility {
 		return audioTracks;
 	}
 
-	public static AudioTrack getCurrentTrack() {
-		return Umbreon.getGuildAudioPlayer().player.getPlayingTrack();
+	public static AudioTrack getCurrentTrack(Guild guild) {
+		return Umbreon.getGuildAudioPlayer(guild).player.getPlayingTrack();
 	}
 
 	public static double clamp(double x, double min, double max) {

@@ -3,8 +3,8 @@ package me.sylvaeon.umbreon.rpg.world.entity;
 import java.util.concurrent.ThreadLocalRandom;
 
 public class Tree {
-    private TreeSpecies species;
-    private double precipitationFactor, sizeFactor;
+	TreeSpecies species;
+	double precipitationFactor, sizeFactor;
 
     public Tree(TreeSpecies species, double precipitation) {
         species = species;

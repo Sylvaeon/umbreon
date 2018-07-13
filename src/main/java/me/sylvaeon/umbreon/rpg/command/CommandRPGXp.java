@@ -7,14 +7,14 @@ import me.sylvaeon.umbreon.rpg.world.entity.player.skill.Skill;
 import me.sylvaeon.umbreon.rpg.world.entity.player.skill.SkillSet;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.TextChannel;
 
 import java.awt.*;
 
 public class CommandRPGXp extends CommandRPG {
 	@Override
-	public void onCall(String[] args, Member member, MessageChannel textChannel) {
-		Player player = Players.getPlayer(member);
+	public void onCall(String[] args, Member member, TextChannel textChannel) {
+		Player player = Players.getPlayer(member.getUser());
 		EmbedBuilder embedBuilder = new EmbedBuilder();
 		embedBuilder.setColor(Color.MAGENTA);
 		embedBuilder.setTitle("Skill Levels");

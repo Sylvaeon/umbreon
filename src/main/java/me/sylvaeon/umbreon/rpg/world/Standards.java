@@ -1,12 +1,13 @@
 package me.sylvaeon.umbreon.rpg.world;
 
+import java.io.Serializable;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Standards {
-    Tile.Feature feature;
-    List<Tile.Biome> biomes;
+public class Standards implements Serializable {
+	public transient Tile.Feature feature;
+	public transient List<Tile.Biome> biomes;
 
     public Standards(Tile.Biome... biomes) {
         this.feature = null;

@@ -2,10 +2,13 @@ package me.sylvaeon.umbreon.rpg.item.drop;
 
 import me.sylvaeon.umbreon.rpg.item.Item;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class DropTable {
-    private Map<Item, DropAmount> drops;
+	public Map<Item, DropAmount> drops;
 
     public DropTable() {
         drops = new HashMap<>();

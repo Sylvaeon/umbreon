@@ -1,23 +1,19 @@
 package me.sylvaeon.umbreon.rpg.world.entity.player.skill;
 
-public class Skill {
+import java.io.Serializable;
+
+public class Skill implements Serializable {
 
     public enum SkillType {
         FORAGING, LOGGING, MINING
     }
 
-	SkillType type;
-	int lvl;
-	int xp;
-	
-	public Skill(SkillType type, int lvl, int xp) {
-		this.type = type;
-		this.lvl = lvl;
-		this.xp = xp;
-	}
+	private String type;
+	private int lvl;
+	private int xp;
 	
 	public Skill(SkillType type) {
-		this.type = type;
+		this.type = type.name();
 		this.lvl = 1;
 		this.xp = 0;
 	}
@@ -42,7 +38,7 @@ public class Skill {
 	}
 	
 	public SkillType getType() {
-		return type;
+		return SkillType.valueOf(type.toUpperCase());
 	}
 	
 	public int getLvl() {
