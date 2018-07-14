@@ -34,7 +34,6 @@ public final class Commands {
 		addCommand("join", new CommandMusicJoin(), "Joins the voice channel you're in");
 		addCommand("leave", new CommandMusicLeave(), "Leaves the current voice channel");
 		addCommand("now-playing", new CommandMusicNowPlaying(), "Shows the currently playing song", "np");
-		addCommand("pulse", new CommandTogglePulse(), "Toggles pulsing effect");
 		addCommand("mine", new CommandRPGMine(), "Go mining");
 		addCommand("log", new CommandRPGLog(), "Go logging");
 		addCommand("inventory", new CommandRPGInventory(), "View your inventory", "inv");

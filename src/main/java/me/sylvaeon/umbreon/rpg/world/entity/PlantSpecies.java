@@ -13,7 +13,7 @@ public class PlantSpecies extends Species {
     }
 
     public enum PlantType {
-        FLOWER, FRUIT, GRAIN, SEED, VEGETABLE
+        FLOWER, FRUIT, GRAIN, SEED, VEGETABLE, MUSHROOM
     }
 
 }

@@ -16,13 +16,13 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class World {
 
-	public static Table<Integer, Integer, Tile> map;
-	public static final File DIR = new File("src/main/resources/tiles");
-	public static Map<String, AnimalSpecies> animalSpecies;
-	public static Map<String, PlantSpecies> plantSpecies;
-	public static Map<String, TreeSpecies> treeSpecies;
-	public static Table<String, Tile.Biome, Set<Species>> speciesByBiome;
-	public static Table<String, Tile.Feature, Set<Species>> speciesByFeature;
+	private static Table<Integer, Integer, Tile> map;
+	private static final File DIR = new File("src/main/resources/tiles");
+	private static Map<String, AnimalSpecies> animalSpecies;
+	private static Map<String, PlantSpecies> plantSpecies;
+	private static Map<String, TreeSpecies> treeSpecies;
+	private static Table<String, Tile.Biome, Set<Species>> speciesByBiome;
+	private static Table<String, Tile.Feature, Set<Species>> speciesByFeature;
 
 	private static final String[] KEYS = new String[] {
 		"animals", "plants", "trees"
@@ -69,9 +69,13 @@ public class World {
 
 	public static void saveTiles() {
 		for(Table.Cell<Integer, Integer, Tile> cell : map.cellSet()) {
-			String path = DIR.getPath() + "/" + cell.getRowKey() + "_" + cell.getColumnKey() + ".tile";
-			Saving.saveObject(cell.getValue(), path);
+			saveTile(cell.getRowKey(), cell.getColumnKey());
 		}
+	}
+	
+	public static void saveTile(int x, int y) {
+		String path = DIR.getPath() + "/" + x + "_" + y + ".tile";
+		Saving.saveObject(getTile(x, y), path);
 	}
 
 	public static void close() {
@@ -208,6 +212,7 @@ public class World {
 	public static Tile generateTile(int x, int y) {
 		Tile tile = new Tile(Tile.Biome.values()[ThreadLocalRandom.current().nextInt(Tile.Biome.values().length)]);
 		map.put(x, y, tile);
+		saveTile(x, y);
 		return tile;
 	}
 
@@ -223,35 +228,44 @@ public class World {
 
 	public static AnimalSpecies getRandomAnimalSpecies(Tile tile) {
 		AnimalSpecies species;
-		do {
+		while(true) {
 			species = (AnimalSpecies) Utility.randomCollectionElement(speciesByBiome.get("animals", tile.getBiome()));
-			if (tile.getFeature() == null) {
+			if (species.getStandards().getFeature() == null) {
 				return species;
+			} else if(species.getStandards().getFeature() == tile.getFeature()) {
+				return species;
+			} else {
+				continue;
 			}
-		} while (!speciesByFeature.get("animals", tile.getFeature()).contains(species));
-		return species;
+		}
 	}
 
 	public static PlantSpecies getRandomPlantSpecies(Tile tile) {
 		PlantSpecies species;
-		do {
+		while(true) {
 			species = (PlantSpecies) Utility.randomCollectionElement(speciesByBiome.get("plants", tile.getBiome()));
-			if(tile.getFeature() == null) {
+			if (species.getStandards().getFeature() == null) {
 				return species;
+			} else if(species.getStandards().getFeature() == tile.getFeature()) {
+				return species;
+			} else {
+				continue;
 			}
-		} while (!speciesByFeature.get("plants", tile.getFeature()).contains(species));
-		return species;
+		}
 	}
 
 	public static TreeSpecies getRandomTreeSpecies(Tile tile) {
 		TreeSpecies species;
-		do {
+		while(true) {
 			species = (TreeSpecies) Utility.randomCollectionElement(speciesByBiome.get("trees", tile.getBiome()));
-			if(tile.getFeature() == null) {
+			if (species.getStandards().getFeature() == null) {
 				return species;
+			} else if(species.getStandards().getFeature() == tile.getFeature()) {
+				return species;
+			} else {
+				continue;
 			}
-		} while (!speciesByFeature.get("trees", tile.getFeature()).contains(species));
-		return species;
+		}
 	}
 
 	public static void addAnimalSpecies(String name, boolean elemental, boolean nightOnly, boolean unique, boolean hostile, boolean canBeTamed, Standards standards) {
@@ -314,4 +328,6 @@ public class World {
 		return treeSpecies.get(name);
 	}
 
+	
+	
 }

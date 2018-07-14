@@ -24,17 +24,27 @@ public class Tile implements Serializable {
 
     public Tile(Biome biome) {
         this.feature = null;
-	    if(ThreadLocalRandom.current().nextDouble() <= (1 / 3d)) {
+	    if(ThreadLocalRandom.current().nextDouble() <= (1 / 3d) || true) {
 		    feature = Feature.values()[ThreadLocalRandom.current().nextInt(Feature.values().length)];
 	    }
         this.biome = biome;
         this.animals = new TreeSet<>();
         this.plants = new TreeSet<>();
         for (int i = 0; i < ThreadLocalRandom.current().nextInt(2, 5); i++) {
-            animals.add(World.getRandomAnimalSpecies(this));
+        	AnimalSpecies species;
+        	do {
+		        species = World.getRandomAnimalSpecies(this);
+		        System.out.println("Tile#constructor - Animals");
+	        } while (animals.contains(species));
+            animals.add(species);
         }
         for (int i = 0; i < ThreadLocalRandom.current().nextInt(2, 5); i++) {
-            plants.add(World.getRandomPlantSpecies(this));
+	        PlantSpecies species;
+	        do {
+		        species = World.getRandomPlantSpecies(this);
+		        System.out.println("Tile#constructor - Plants");
+	        } while (plants.contains(species));
+	        plants.add(species);
         }
         this.treeSpecies = World.getRandomTreeSpecies(this);
         

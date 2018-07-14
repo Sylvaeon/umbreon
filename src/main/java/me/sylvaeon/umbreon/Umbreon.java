@@ -22,7 +22,6 @@ import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.managers.Presence;
 
 import javax.security.auth.login.LoginException;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,7 +31,6 @@ public final class Umbreon extends ListenerAdapter {
     private static AudioPlayerManager playerManager;
    	private static Map<Long, GuildMusicManager> musicManagers;
    	private static User CYNTHIA, UMBREON;
-	private static Thread pulseThread;
 	private static boolean pulse = true;
 	private static boolean endPulse = false;
 	private static Map<User, TextChannel> privateChannels;
@@ -57,37 +55,6 @@ public final class Umbreon extends ListenerAdapter {
 		Commands.init();
         Players.updatePeople();
 
-        pulseThread = new Thread() {
-            @Override
-            public void run() {
-            	Guild guild = jda.getGuildById(310572543767478272L);
-            	Role role = guild.getRoleById(440329428439007235L);
-                try {
-                    for (int i = 0; i < Integer.MAX_VALUE; i++) {
-                        if(endPulse) {
-                            Color color = new Color(0xEE82EE);
-							role.getManager().setColor(color).complete();
-                            return;
-                        } else {
-                            if (i >= 14) {
-                                i = 0;
-                            }
-                            if(pulse) {
-                                Color color = Utility.getPinkGradientColor(i % 14);
-								role.getManager().setColor(color).queue();
-                            }
-                            synchronized (this) {
-                                wait(200);
-                            }
-                        }
-                    }
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
-        };
-        pulseThread.start();
-        System.out.println("Thread 2 Initialized");
     }
 
 	public synchronized static void quit() {
@@ -204,9 +171,6 @@ public final class Umbreon extends ListenerAdapter {
 		return UMBREON;
 	}
 
-	public static Thread getPulseThread() {
-		return pulseThread;
-	}
 
 	public static boolean isPulse() {
 		return pulse;
