@@ -54,7 +54,6 @@ public class Standards implements Serializable {
 
     public static Standards ALL() {
         Standards standards = new Standards(Tile.Biome.values());
-        standards.removeBiome(Tile.Biome.OCEAN);
         return standards;
     }
 

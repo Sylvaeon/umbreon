@@ -10,9 +10,6 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.concurrent.ThreadLocalRandom;
 
-import static me.sylvaeon.umbreon.Utility.clamp;
-import static me.sylvaeon.umbreon.Utility.inRange;
-
 public class Tile implements Serializable {
 	private static final long serialVersionUID = 5L;
 
@@ -34,15 +31,13 @@ public class Tile implements Serializable {
         	AnimalSpecies species;
         	do {
 		        species = World.getRandomAnimalSpecies(this);
-		        System.out.println("Tile#constructor - Animals");
 	        } while (animals.contains(species));
             animals.add(species);
         }
-        for (int i = 0; i < ThreadLocalRandom.current().nextInt(2, 5); i++) {
+        for (int i = 0; i < ThreadLocalRandom.current().nextInt(2, 7); i++) {
 	        PlantSpecies species;
 	        do {
 		        species = World.getRandomPlantSpecies(this);
-		        System.out.println("Tile#constructor - Plants");
 	        } while (plants.contains(species));
 	        plants.add(species);
         }
@@ -99,35 +94,11 @@ public class Tile implements Serializable {
     }
 
 	public enum Biome {
-		TUNDRA(0, 20, 0, 40), TAIGA(0, 20, 40, 100), DESERT(20, 100, 0, 10),
-		GRASSLAND(20, 100, 10, 20), SHRUBLAND(20, 100, 20, 40), SAVANNA(20, 100, 40, 50),
-		FOREST(20, 100, 50, 70), SWAMP(20, 100, 70, 80), TROPICS(20, 100, 80, 100),
-		OCEAN(101, 101, 101, 101);
-
-		int temperatureMin, temperatureMax, precipitationMin, precipitationMax;
-
-		Biome(int temperatureMin, int temperatureMax, int precipitationMin, int precipitationMax) {
-			this.temperatureMin = temperatureMin;
-			this.temperatureMax = temperatureMax;
-			this.precipitationMin = precipitationMin;
-			this.precipitationMax = precipitationMax;
-		}
-
-		public static Biome getBiomeFromClimate(double temperature, double precipitation) {
-			temperature = clamp(temperature, 0, 100);
-			precipitation = clamp(precipitation, 0, 100);
-			for (Biome biome : values()) {
-				if (inRange(temperature, biome.temperatureMin, biome.temperatureMax) && inRange(precipitation, biome.precipitationMin, biome.precipitationMax)) {
-					return biome;
-				}
-			}
-			return null;
-		}
+		TUNDRA, TAIGA, DESERT, GRASSLAND, SHRUBLAND,
+		SAVANNA, FOREST, SWAMP, TROPICS, MOUNTAIN;
 
 		public Color getColor() {
-			if(this == Biome.OCEAN) {
-				return new Color(0x0000FF);
-			} else if(this == Biome.TAIGA) {
+			if(this == Biome.TAIGA) {
 				return new Color(0x4a86e8);
 			} else if(this == Biome.TROPICS) {
 				return new Color(0x274e13);

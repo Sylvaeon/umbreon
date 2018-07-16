@@ -58,6 +58,7 @@ public class Players {
 		Player player;
 		if(object == null) {
 			player = new Player(user.getName());
+			savePlayer(user);
 		} else {
 			player = (Player) object;
 		}

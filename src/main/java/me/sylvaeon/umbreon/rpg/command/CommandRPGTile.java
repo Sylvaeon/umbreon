@@ -28,11 +28,10 @@ public class CommandRPGTile extends CommandRPG {
 		final Set<PlantSpecies> plants = tile.getPlants();
 		final TreeSpecies tree = tile.getTreeSpecies();
 		EmbedBuilder builder = new EmbedBuilder();
-		builder.setTitle("x:" + x + ", y:" + y);
-		builder.setAuthor(member.getUser().getName());
+		builder.setAuthor(member.getUser().getName() + " - x:" + x + ", y:" + y);
 		builder.setColor(biome.getColor());
 		if(feature != null) {
-			builder.setAuthor(formatEnum(feature));
+			builder.setTitle(formatEnum(feature));
 		}
 		String animalString = "";
 		for(AnimalSpecies species : animals) {
