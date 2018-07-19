@@ -4,11 +4,11 @@ import com.google.common.collect.HashBasedTable;
 import com.google.common.collect.Table;
 import me.sylvaeon.umbreon.Google;
 import me.sylvaeon.umbreon.Saving;
-import me.sylvaeon.umbreon.Utility;
 import me.sylvaeon.umbreon.rpg.world.entity.AnimalSpecies;
 import me.sylvaeon.umbreon.rpg.world.entity.PlantSpecies;
 import me.sylvaeon.umbreon.rpg.world.entity.Species;
 import me.sylvaeon.umbreon.rpg.world.entity.TreeSpecies;
+import me.sylvaeon.umbreon.util.Utility;
 
 import java.io.File;
 import java.util.*;
@@ -111,27 +111,24 @@ public class World {
 			list = lists.get(i);
 			if (((String) list.get(7)).startsWith("!")) {
 				standards = Standards.ALL();
+				standards.removeBiome(((String) list.get(4)).replaceAll("!", ""));
+				standards.removeBiome(((String) list.get(5)).replaceAll("!", ""));
+				standards.removeBiome(((String) list.get(6)).replaceAll("!", ""));
 				standards.removeBiome(((String) list.get(7)).replaceAll("!", ""));
 				standards.removeBiome(((String) list.get(8)).replaceAll("!", ""));
-				standards.removeBiome(((String) list.get(9)).replaceAll("!", ""));
-				standards.removeBiome(((String) list.get(10)).replaceAll("!", ""));
-				standards.removeBiome(((String) list.get(11)).replaceAll("!", ""));
 			} else {
 				standards = Standards.NONE();
+				standards.addBiome((String) list.get(4));
+				standards.addBiome((String) list.get(5));
+				standards.addBiome((String) list.get(6));
 				standards.addBiome((String) list.get(7));
 				standards.addBiome((String) list.get(8));
-				standards.addBiome((String) list.get(9));
-				standards.addBiome((String) list.get(10));
-				standards.addBiome((String) list.get(11));
 			}
-			standards.setFeature(getFeatureFromName((String) list.get(6)));
+			standards.setFeature(getFeatureFromName((String) list.get(3)));
 
 			addAnimalSpecies((String) list.get(0),
 					((String) list.get(1)).equalsIgnoreCase("Y"),
 					((String) list.get(2)).equalsIgnoreCase("Y"),
-					((String) list.get(3)).equalsIgnoreCase("Y"),
-					((String) list.get(4)).equalsIgnoreCase("Y"),
-					((String) list.get(5)).equalsIgnoreCase("Y"),
 					standards
 			);
 		}
@@ -210,7 +207,12 @@ public class World {
 	}
 
 	public static Tile generateTile(int x, int y) {
-		Tile tile = new Tile(Tile.Biome.values()[ThreadLocalRandom.current().nextInt(Tile.Biome.values().length)]);
+		Tile.Feature feature = null;
+		if(ThreadLocalRandom.current().nextDouble() <= (1 / 3d) || true) {
+			feature = Tile.Feature.values()[ThreadLocalRandom.current().nextInt(Tile.Feature.values().length)];
+		}
+		Tile.Biome biome = Tile.Biome.values()[ThreadLocalRandom.current().nextInt(Tile.Biome.values().length)];
+		Tile tile = new Tile(feature, biome);
 		map.put(x, y, tile);
 		saveTile(x, y);
 		return tile;
@@ -268,35 +270,35 @@ public class World {
 		}
 	}
 
-	public static void addAnimalSpecies(String name, boolean elemental, boolean nightOnly, boolean unique, boolean hostile, boolean canBeTamed, Standards standards) {
-		AnimalSpecies species = new AnimalSpecies(name, elemental, nightOnly, unique, hostile, canBeTamed, standards);
-		for(Tile.Biome biome : standards.biomes) {
+	public static void addAnimalSpecies(String name, boolean unique, boolean canBeTamed, Standards standards) {
+		AnimalSpecies species = new AnimalSpecies(name, unique, canBeTamed, standards);
+		for(Tile.Biome biome : standards.getBiomes()) {
 			speciesByBiome.get("animals", biome).add(species);
 		}
-		if(standards.feature != null) {
-			speciesByFeature.get("animals", standards.feature).add(species);
+		if(standards.getFeature() != null) {
+			speciesByFeature.get("animals", standards.getFeature()).add(species);
 		}
 		animalSpecies.putIfAbsent(name, species);
 	}
 
 	public static void addPlantSpecies(String name, PlantSpecies.PlantType type, Standards standards) {
 		PlantSpecies species = new PlantSpecies(name, type, standards);
-		for(Tile.Biome biome : standards.biomes) {
+		for(Tile.Biome biome : standards.getBiomes()) {
 			speciesByBiome.get("plants", biome).add(species);
 		}
-		if(standards.feature != null) {
-			speciesByFeature.get("plants", standards.feature).add(species);
+		if(standards.getFeature() != null) {
+			speciesByFeature.get("plants", standards.getFeature()).add(species);
 		}
 		plantSpecies.putIfAbsent(name, species);
 	}
 
 	public static void addTreeSpecies(String name, Standards standards) {
 		TreeSpecies species = new TreeSpecies(name, standards);
-		for(Tile.Biome biome : standards.biomes) {
+		for(Tile.Biome biome : standards.getBiomes()) {
 			speciesByBiome.get("trees", biome).add(species);
 		}
-		if(standards.feature != null) {
-			speciesByFeature.get("trees", standards.feature).add(species);
+		if(standards.getFeature() != null) {
+			speciesByFeature.get("trees", standards.getFeature()).add(species);
 		}
 		treeSpecies.putIfAbsent(name, species);
 	}

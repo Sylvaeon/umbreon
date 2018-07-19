@@ -3,7 +3,7 @@ package me.sylvaeon.umbreon.rpg.item.equipable.tool;
 import me.sylvaeon.umbreon.rpg.item.Item;
 import me.sylvaeon.umbreon.rpg.item.equipable.Equipable;
 
-import static me.sylvaeon.umbreon.Utility.formatEnum;
+import static me.sylvaeon.umbreon.util.Utility.formatEnum;
 
 public class Tool extends Item implements Equipable {
 

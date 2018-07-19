@@ -1,8 +1,8 @@
 package me.sylvaeon.umbreon.rpg.item;
 
-import me.sylvaeon.umbreon.Utility;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Tool;
 import me.sylvaeon.umbreon.rpg.item.equipable.weapon.Sword;
+import me.sylvaeon.umbreon.util.Utility;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;

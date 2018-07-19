@@ -8,17 +8,17 @@ import me.sylvaeon.umbreon.rpg.world.entity.TreeSpecies;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Player;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Players;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.Set;
 
-import static me.sylvaeon.umbreon.Utility.formatEnum;
+import static me.sylvaeon.umbreon.util.Utility.formatEnum;
 
 public class CommandRPGTile extends CommandRPG {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
-		Player player = Players.getPlayer(member.getUser());
+	public void onCall(String[] args, User user, MessageChannel messageChannel) {
+		Player player = Players.getPlayer(user.getUser());
 		int x = player.getXPos();
 		int y = player.getYPos();
 		final Tile tile = World.getTile(player.getXPos(), player.getYPos());
@@ -28,7 +28,7 @@ public class CommandRPGTile extends CommandRPG {
 		final Set<PlantSpecies> plants = tile.getPlants();
 		final TreeSpecies tree = tile.getTreeSpecies();
 		EmbedBuilder builder = new EmbedBuilder();
-		builder.setAuthor(member.getUser().getName() + " - x:" + x + ", y:" + y);
+		builder.setAuthor(user.getUser().getName() + " - x:" + x + ", y:" + y);
 		builder.setColor(biome.getColor());
 		if(feature != null) {
 			builder.setTitle(formatEnum(feature));
@@ -47,6 +47,6 @@ public class CommandRPGTile extends CommandRPG {
 		builder.addField("Plants", plantString, false);
 		builder.addField("Tree", tree.getName(), false);
 		builder.setFooter(formatEnum(biome), null);
-		textChannel.sendMessage(builder.build()).queue();
+		messageChannel.sendMessage(builder.build()).queue();
 	}
 }

@@ -6,8 +6,7 @@ import me.sylvaeon.umbreon.rpg.command.action.CommandRPGCraft;
 import me.sylvaeon.umbreon.rpg.command.action.CommandRPGGive;
 import me.sylvaeon.umbreon.rpg.command.action.gathering.CommandRPGLog;
 import me.sylvaeon.umbreon.rpg.command.action.gathering.CommandRPGMine;
-import net.dv8tion.jda.core.Permission;
-import net.dv8tion.jda.core.entities.Member;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -72,8 +71,8 @@ public final class Commands {
 		commands.put(name, command);
 	}
 
-	public static boolean canExecute(Member member, Command command) {
-		if(member.hasPermission(Permission.ADMINISTRATOR) || !command.requiresAdmin()) {
+	public static boolean canExecute(User user, Command command, boolean isAdmin) {
+		if(isAdmin || !command.requiresAdmin()) {
 			return true;
 		}
 		return false;

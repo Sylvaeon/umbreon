@@ -5,19 +5,19 @@ import me.sylvaeon.umbreon.rpg.item.Item;
 import me.sylvaeon.umbreon.rpg.item.equipable.tool.Tool;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Player;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Players;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.Map;
 
 public class CommandRPGInventory extends CommandRPG {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
-		Player player = Players.getPlayer(member.getUser());
+	public void onCall(String[] args, User user, MessageChannel messageChannel) {
+		Player player = Players.getPlayer(user.getUser());
 		String str = "";
 		player.getInventory().removeEmptys();
 		if(!player.getInventory().isEmpty()) {
-			str += "\n" + member.getAsMention() + "'s Inventory (" + player.getInventory().total() + "):\n";
+			str += "\n" + user.getAsMention() + "'s Inventory (" + player.getInventory().total() + "):\n";
 			for (Map.Entry<Item, Counter> entry : player.getInventory().entrySet()) {
 				Item item = entry.getKey();
 				long l = entry.getValue().count;
@@ -31,8 +31,8 @@ public class CommandRPGInventory extends CommandRPG {
 				str += "\n";
 			}
 		} else {
-			str = member.getAsMention() + "'s ItemSet is empty!";
+			str = user.getAsMention() + "'s ItemSet is empty!";
 		}
-		textChannel.sendMessage(str).queue();
+		messageChannel.sendMessage(str).queue();
 	}
 }

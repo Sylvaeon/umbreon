@@ -9,8 +9,8 @@ import me.sylvaeon.umbreon.music.GuildMusicManager;
 import me.sylvaeon.umbreon.rpg.crafting.Recipes;
 import me.sylvaeon.umbreon.rpg.item.Items;
 import me.sylvaeon.umbreon.rpg.world.World;
-import me.sylvaeon.umbreon.rpg.world.entity.player.Player;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Players;
+import me.sylvaeon.umbreon.util.DiscordTextUtil;
 import net.dv8tion.jda.core.AccountType;
 import net.dv8tion.jda.core.JDA;
 import net.dv8tion.jda.core.JDABuilder;
@@ -18,6 +18,7 @@ import net.dv8tion.jda.core.Permission;
 import net.dv8tion.jda.core.entities.*;
 import net.dv8tion.jda.core.events.guild.member.GuildMemberJoinEvent;
 import net.dv8tion.jda.core.events.message.guild.GuildMessageReceivedEvent;
+import net.dv8tion.jda.core.events.message.priv.PrivateMessageReceivedEvent;
 import net.dv8tion.jda.core.hooks.ListenerAdapter;
 import net.dv8tion.jda.core.managers.Presence;
 
@@ -30,24 +31,27 @@ public final class Umbreon extends ListenerAdapter {
     private static JDA jda;
     private static AudioPlayerManager playerManager;
    	private static Map<Long, GuildMusicManager> musicManagers;
-   	private static User CYNTHIA, UMBREON;
-	private static boolean pulse = true;
-	private static boolean endPulse = false;
-	private static Map<User, TextChannel> privateChannels;
+   	
+   	private static Map<Long, String> welcomeMessages;
+   	private static Map<Long, TextChannel> welcomeChannels;
+   	
+   	public static User CYNTHIA, UMBREON;
 
     public static void main(String[] args) throws LoginException, InterruptedException {
         jda = new JDABuilder(AccountType.BOT).setToken(TOKEN).buildBlocking();
         jda.addEventListener(new Umbreon());
         Presence presence = jda.getPresence();
-        presence.setGame(Game.playing("🖤Love You💛"));
+        presence.setGame(Game.playing("🖤$help💛"));
         CYNTHIA = jda.getUserById(199523552850870272L);
         UMBREON = jda.getSelfUser();
         musicManagers = new HashMap<>();
-		privateChannels = new HashMap<>();
         playerManager = new DefaultAudioPlayerManager();
         AudioSourceManagers.registerRemoteSources(playerManager);
         AudioSourceManagers.registerLocalSource(playerManager);
 	
+        welcomeMessages = new HashMap<>();
+        welcomeChannels = new HashMap<>();
+        
 		Items.init();
         World.init();
 		Recipes.init();
@@ -60,8 +64,6 @@ public final class Umbreon extends ListenerAdapter {
 	public synchronized static void quit() {
 		Players.close();
 		World.close();
-		pulse = false;
-		endPulse = true;
 		try {
 			Object lock = new Object();
 			synchronized (lock) {
@@ -87,17 +89,41 @@ public final class Umbreon extends ListenerAdapter {
         return musicManager;
     }
 
+    public static String getWelcomeMessage(Guild guild, User user) {
+    	long guildId = guild.getIdLong();
+    	String message = welcomeMessages.get(guildId);
+    	if(message == null) {
+    		message = "Welcome to %g, %u!";
+    		welcomeMessages.put(guildId, message);
+	    }
+	    message = message.replaceAll("\\%g", guild.getName());
+    	message = message.replaceAll("\\%u", user.getName());
+    	return message;
+    }
+    
+    public static TextChannel getWelcomeChannel(Guild guild) {
+	    long guildId = guild.getIdLong();
+		TextChannel textChannel = welcomeChannels.get(guildId);
+		if(textChannel == null) {
+			textChannel = guild.getDefaultChannel();
+			welcomeChannels.put(guildId, textChannel);
+		}
+		return textChannel;
+    }
+    
     @Override
     public void onGuildMessageReceived(GuildMessageReceivedEvent event) {
-        processMessage(event.getMessage());
+        processMessage(event.getAuthor(), event.getMessage(), event.getMember().hasPermission(Permission.ADMINISTRATOR));
     }
-
-	private void processMessage(Message message) {
+	
+	@Override
+	public void onPrivateMessageReceived(PrivateMessageReceivedEvent event) {
+		processMessage(event.getAuthor(), event.getMessage(), false);
+	}
+	
+	private void processMessage(User user, Message message, boolean isAdmin) {
     	String messageString = message.getContentRaw();
     	TextChannel channel = message.getTextChannel();
-    	User user = message.getAuthor();
-		Member member = message.getMember();
-    	Player player = Players.getPlayer(user);
 		if (!user.isBot()) {
 			if (messageString.startsWith("$")) {
 				messageString = messageString.substring(1);
@@ -105,14 +131,14 @@ public final class Umbreon extends ListenerAdapter {
 				Command command = Commands.getCommand(split[0]);
 				message.delete().complete();
 				if (command != null) {
-					if (Commands.canExecute(member, command)) {
+					if (Commands.canExecute(user, command, isAdmin)) {
 						String[] args = new String[split.length - 1];
 						if (args.length != 0) {
 							for (int i = 1; i < split.length; i++) {
 								args[i - 1] = split[i];
 							}
 						}
-						command.onCall(args, member, channel);
+						command.onCall(args, user, channel);
 					} else {
 						channel.sendMessage("Error: Invalid permissions").queue();
 					}
@@ -121,36 +147,23 @@ public final class Umbreon extends ListenerAdapter {
 				}
 			}
 			if (messageString.toLowerCase().contains(badword)) {
-				PrivateChannel pc = member.getUser().openPrivateChannel().complete();
+				PrivateChannel pc = user.openPrivateChannel().complete();
 				pc.sendMessage("Watch your language :<\n~Cynthia").queue();
-				message.delete().complete();
+				if(isAdmin) {
+					DiscordTextUtil.removeMessage(message);
+				}
 			}
 		}
 	}
-
-    @Override
+	
+	@Override
     public void onGuildMemberJoin(GuildMemberJoinEvent event) {
+    	Guild guild = event.getGuild();
+    	User user = event.getUser();
         Players.initPlayer(event.getUser());
+        getWelcomeChannel(guild).sendMessage(getWelcomeMessage(guild, user)).queue();
     }
-
-    public static boolean addPrivateChannel(User user) {
-    	String name = "rpg-" + user.getId();
-    	Guild guild = jda.getGuildById(310572543767478272L);
-    	if(guild.getTextChannelsByName(name, true).isEmpty()) {
-			guild.getController().createTextChannel(name).complete();
-			TextChannel textChannel = guild.getTextChannelsByName(name, true).get(0);
-			textChannel.createPermissionOverride(guild.getPublicRole()).setDeny(Permission.MESSAGE_READ, Permission.VIEW_CHANNEL).complete();
-			textChannel.createPermissionOverride(guild.getMember(user)).setAllow(Permission.MESSAGE_READ, Permission.VIEW_CHANNEL).complete();
-			return true;
-		} else {
-    		return false;
-		}
-	}
-
-	public static String getTOKEN() {
-		return TOKEN;
-	}
-
+	
 	public static JDA getJda() {
 		return jda;
 	}
@@ -158,38 +171,7 @@ public final class Umbreon extends ListenerAdapter {
 	public static AudioPlayerManager getPlayerManager() {
 		return playerManager;
 	}
-
-	public static Map<Long, GuildMusicManager> getMusicManagers() {
-		return musicManagers;
-	}
-
-	public static User getCYNTHIA() {
-		return CYNTHIA;
-	}
-
-	public static User getUMBREON() {
-		return UMBREON;
-	}
-
-
-	public static boolean isPulse() {
-		return pulse;
-	}
-
-	public static void flipPulse() {
-    	pulse = !pulse;
-	}
-
-	public static boolean isEndPulse() {
-		return endPulse;
-	}
-
-	public static Map<User, TextChannel> getPrivateChannels() {
-		return privateChannels;
-	}
-
-
-
+	
 
 
 

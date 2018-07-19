@@ -3,10 +3,8 @@ package me.sylvaeon.umbreon.command;
 import me.sylvaeon.umbreon.music.command.CommandMusic;
 import me.sylvaeon.umbreon.rpg.command.CommandRPG;
 import net.dv8tion.jda.core.EmbedBuilder;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.PrivateChannel;
-import net.dv8tion.jda.core.entities.TextChannel;
-import net.dv8tion.jda.core.entities.User;
+import net.dv8tion.jda.core.Permission;
+import net.dv8tion.jda.core.entities.*;
 
 import java.awt.*;
 import java.util.ArrayList;
@@ -14,13 +12,18 @@ import java.util.List;
 
 public class CommandHelp extends Command {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
-		User user = member.getUser();
+	public void onCall(String[] args, User user, MessageChannel messageChannel) {
 		List<Command> normalCommands = new ArrayList<>();
 		List<Command> musicCommands = new ArrayList<>();
 		List<Command> rpgCommands = new ArrayList<>();
 		for(Command c : Commands.getCommands().values()) {
-			if(Commands.canExecute(member, c)) {
+			boolean isAdmin = false;
+			if(messageChannel instanceof TextChannel) {
+				Guild guild = ((TextChannel) messageChannel).getGuild();
+				Member member = guild.getMember(user);
+				isAdmin = member.hasPermission(Permission.ADMINISTRATOR);
+			}
+			if(Commands.canExecute(user, c, isAdmin)) {
 				if (c instanceof CommandMusic) {
 					musicCommands.add(c);
 				} else if (c instanceof CommandRPG) {

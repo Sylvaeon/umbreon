@@ -1,7 +1,6 @@
 package me.sylvaeon.umbreon.rpg.world.entity.player;
 
 import me.sylvaeon.umbreon.Counter;
-import me.sylvaeon.umbreon.Utility;
 import me.sylvaeon.umbreon.rpg.crafting.Recipe;
 import me.sylvaeon.umbreon.rpg.crafting.Recipes;
 import me.sylvaeon.umbreon.rpg.item.Item;
@@ -12,6 +11,7 @@ import me.sylvaeon.umbreon.rpg.item.equipable.tool.Tool;
 import me.sylvaeon.umbreon.rpg.world.entity.Entity;
 import me.sylvaeon.umbreon.rpg.world.entity.player.skill.Skill;
 import me.sylvaeon.umbreon.rpg.world.entity.player.skill.SkillSet;
+import me.sylvaeon.umbreon.util.Utility;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import org.jetbrains.annotations.Contract;
 import org.jetbrains.annotations.NotNull;

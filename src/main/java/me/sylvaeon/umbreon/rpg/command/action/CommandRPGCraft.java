@@ -4,15 +4,15 @@ import me.sylvaeon.umbreon.rpg.command.CommandRPG;
 import me.sylvaeon.umbreon.rpg.crafting.Recipe;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Player;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Players;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 
 import java.util.List;
 
 public class CommandRPGCraft extends CommandRPG {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
-		Player player = Players.getPlayer(member.getUser());
+	public void onCall(String[] args, User user, MessageChannel messageChannel) {
+		Player player = Players.getPlayer(user.getUser());
 		List<Recipe> recipeList = player.getAvailableRecipes();
 		if(args.length == 0) {
 			String string;
@@ -25,18 +25,18 @@ public class CommandRPGCraft extends CommandRPG {
 					string += (i + 1) + ". " + recipe.toString() + "\n";
 				}
 			}
-			textChannel.sendMessage(string).queue();
+			messageChannel.sendMessage(string).queue();
 		} else if(args.length == 1) {
 			try {
 				int index = Integer.parseUnsignedInt(args[0]);
 				if(index < 1 || index > recipeList.size()) {
-					textChannel.sendMessage("Not a valid number!").queue();
+					messageChannel.sendMessage("Not a valid number!").queue();
 				} else {
 					Recipe recipe = recipeList.get(index - 1);
-					player.craft(recipe, textChannel);
+					player.craft(recipe, messageChannel);
 				}
 			} catch (NumberFormatException e) {
-				textChannel.sendMessage("Not a valid number!");
+				messageChannel.sendMessage("Not a valid number!");
 			}
 		}
 	}

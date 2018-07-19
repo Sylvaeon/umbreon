@@ -1,11 +1,11 @@
 package me.sylvaeon.umbreon.rpg.command;
 
-import me.sylvaeon.umbreon.Utility;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Player;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Players;
+import me.sylvaeon.umbreon.util.Utility;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.User;
 
 import java.awt.*;
@@ -14,11 +14,11 @@ import java.util.List;
 
 public class CommandRPGLeaderboard extends CommandRPG {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
+	public void onCall(String[] args, User user, MessageChannel messageChannel) {
 		List<User> sortedList = new ArrayList<>(Utility.sortByValues(Players.players).keySet());
 		List<Member> memberList = new ArrayList<>();
 		for(int i = 0; i < sortedList.size(); i++) {
-			memberList.add(member.getGuild().getMember(sortedList.get(i)));
+			memberList.add(user.getGuild().getMember(sortedList.get(i)));
 		}
 		EmbedBuilder embedBuilder = new EmbedBuilder();
 		embedBuilder.setAuthor("\uD83D\uDC98\uD83E\uDDE1\uD83D\uDC9B\uD83D\uDC9A\uD83D\uDC99\uD83D\uDC9CLevel Leaderboard\uD83D\uDC9C\uD83D\uDC99\uD83D\uDC9A\uD83D\uDC9B\uD83E\uDDE1\uD83D\uDC98");
@@ -34,6 +34,6 @@ public class CommandRPGLeaderboard extends CommandRPG {
 			String exp = "Total Xp: " + p.getTotalXp();
 			embedBuilder.addField(index + ". " + name, level + " | " + exp, false);
 		}
-		textChannel.sendMessage(embedBuilder.build()).queue();
+		messageChannel.sendMessage(embedBuilder.build()).queue();
 	}
 }

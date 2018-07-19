@@ -6,8 +6,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class Standards implements Serializable {
-	public transient Tile.Feature feature;
-	public transient List<Tile.Biome> biomes;
+	private transient Tile.Feature feature;
+	private transient List<Tile.Biome> biomes;
 
     public Standards(Tile.Biome... biomes) {
         this.feature = null;
@@ -24,7 +24,7 @@ public class Standards implements Serializable {
 
     public void removeBiome(String name) {
         if (name == "" || name == null) {
-
+			return;
         } else {
             removeBiome(Tile.Biome.valueOf(name.toUpperCase()));
         }
@@ -60,11 +60,7 @@ public class Standards implements Serializable {
     public List<Tile.Biome> getBiomes() {
         return biomes;
     }
-
-    public void setBiomes(List<Tile.Biome> biomes) {
-        this.biomes = biomes;
-    }
-
+    
     public Tile.Feature getFeature() {
         return feature;
     }

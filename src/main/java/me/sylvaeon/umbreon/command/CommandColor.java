@@ -1,8 +1,8 @@
 package me.sylvaeon.umbreon.command;
 
-import me.sylvaeon.umbreon.Utility;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import me.sylvaeon.umbreon.util.Utility;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -16,7 +16,7 @@ import java.util.Random;
 
 public class CommandColor extends Command {
 	@Override
-	public void onCall(String[] args, Member member, TextChannel textChannel) {
+	public void onCall(String[] args, User user, MessageChannel messageChannel) {
 		if(args.length == 0) {
 			
 			return;
@@ -127,6 +127,6 @@ public class CommandColor extends Command {
 			}
 			bufferedImage.flush();
 		}
-		textChannel.sendFile(file).queue();
+		messageChannel.sendFile(file).queue();
 	}
 }

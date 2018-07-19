@@ -1,6 +1,6 @@
 package me.sylvaeon.umbreon.rpg.item.drop;
 
-import me.sylvaeon.umbreon.Utility;
+import me.sylvaeon.umbreon.util.Utility;
 
 import java.util.concurrent.ThreadLocalRandom;
 

@@ -19,11 +19,7 @@ public class Tile implements Serializable {
 	private Set<PlantSpecies> plants;
 	private TreeSpecies treeSpecies;
 
-    public Tile(Biome biome) {
-        this.feature = null;
-	    if(ThreadLocalRandom.current().nextDouble() <= (1 / 3d) || true) {
-		    feature = Feature.values()[ThreadLocalRandom.current().nextInt(Feature.values().length)];
-	    }
+    public Tile(Feature feature, Biome biome) {
         this.biome = biome;
         this.animals = new TreeSet<>();
         this.plants = new TreeSet<>();
@@ -45,54 +41,26 @@ public class Tile implements Serializable {
         
     }
 
-    public Tile(Feature feature, Biome biome, Set<AnimalSpecies> animals, Set<PlantSpecies> plants, TreeSpecies treeSpecies) {
-        this.feature = feature;
-        this.biome = biome;
-        this.animals = animals;
-        this.plants = plants;
-        this.treeSpecies = treeSpecies;
-    }
-
 	public Feature getFeature() {
         return feature;
     }
-
-    public void setFeature(Feature feature) {
-        this.feature = feature;
-    }
-
+    
     public Biome getBiome() {
         return biome;
     }
-
-    public void setBiome(Biome biome) {
-        this.biome = biome;
-    }
-
+    
     public Set<AnimalSpecies> getAnimals() {
         return animals;
     }
-
-    public void setAnimals(Set<AnimalSpecies> animals) {
-        this.animals = animals;
-    }
-
+    
     public Set<PlantSpecies> getPlants() {
         return plants;
     }
-
-    public void setPlants(Set<PlantSpecies> plants) {
-        this.plants = plants;
-    }
-
+    
     public TreeSpecies getTreeSpecies() {
         return treeSpecies;
     }
-
-    public void setTreeSpecies(TreeSpecies treeSpecies) {
-        this.treeSpecies = treeSpecies;
-    }
-
+    
 	public enum Biome {
 		TUNDRA, TAIGA, DESERT, GRASSLAND, SHRUBLAND,
 		SAVANNA, FOREST, SWAMP, TROPICS, MOUNTAIN;

@@ -1,12 +1,19 @@
 package me.sylvaeon.umbreon.music.command;
 
-import me.sylvaeon.umbreon.Utility;
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import me.sylvaeon.umbreon.util.DiscordVoiceUtil;
+import net.dv8tion.jda.core.entities.*;
 
 public class CommandMusicJoin extends CommandMusic {
     @Override
-    public void onCall(String[] args, Member member, TextChannel textChannel) {
-        Utility.joinVoiceChannel(member.getGuild(), member.getVoiceState().getChannel());
+    public void onCall(String[] args, User user, MessageChannel messageChannel) {
+    	Guild guild = DiscordVoiceUtil.getCurrentGuild(user);
+	    if(guild != null) {
+    		Member member = guild.getMember(user);
+    		GuildVoiceState voiceState = member.getVoiceState();
+		    DiscordVoiceUtil.joinVoiceChannel(guild, voiceState.getChannel());
+	    } else {
+    		messageChannel.sendMessage("Cannot find the voice chat you're in").queue();
+	    }
+	    
     }
 }

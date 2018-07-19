@@ -1,7 +1,7 @@
 package me.sylvaeon.umbreon.command;
 
-import net.dv8tion.jda.core.entities.Member;
-import net.dv8tion.jda.core.entities.TextChannel;
+import net.dv8tion.jda.core.entities.MessageChannel;
+import net.dv8tion.jda.core.entities.User;
 
 public abstract class Command implements Comparable<Command> {
 	
@@ -13,7 +13,7 @@ public abstract class Command implements Comparable<Command> {
 		return false;
 	}
 	
-	public abstract void onCall(String[] args, Member member, TextChannel textChannel);
+	public abstract void onCall(String[] args, User user, MessageChannel messageChannel);
 
 	@Override
 	public int compareTo(Command o) {
