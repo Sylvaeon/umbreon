@@ -13,7 +13,7 @@ import java.util.Map;
 public class CommandRPGInventory extends CommandRPG {
 	@Override
 	public void onCall(String[] args, User user, MessageChannel messageChannel) {
-		Player player = Players.getPlayer(user.getUser());
+		Player player = Players.getPlayer(user);
 		String str = "";
 		player.getInventory().removeEmptys();
 		if(!player.getInventory().isEmpty()) {

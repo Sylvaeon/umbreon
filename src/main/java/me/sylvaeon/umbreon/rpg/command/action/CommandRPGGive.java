@@ -19,7 +19,7 @@ public class CommandRPGGive extends CommandRPG {
 			String amountName = quoteSeperated[2].replaceAll(" ", "");
 			Item item = Items.getItem(itemName);
 			int amount = Integer.parseUnsignedInt(amountName);
-			Player player = Players.getPlayer(user.getUser());
+			Player player = Players.getPlayer(user);
 			player.getInventory().add(item, amount);
 		} catch (Exception e) {
 		}

@@ -12,7 +12,7 @@ import java.util.List;
 public class CommandRPGCraft extends CommandRPG {
 	@Override
 	public void onCall(String[] args, User user, MessageChannel messageChannel) {
-		Player player = Players.getPlayer(user.getUser());
+		Player player = Players.getPlayer(user);
 		List<Recipe> recipeList = player.getAvailableRecipes();
 		if(args.length == 0) {
 			String string;

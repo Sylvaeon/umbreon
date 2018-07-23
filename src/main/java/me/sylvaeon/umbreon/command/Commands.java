@@ -27,29 +27,28 @@ public final class Commands {
 		addCommand("moveall", new CommandMoveAll(), "Moves everyone from one voice channel to another");
 		addCommand("play", new CommandMusicPlay(), "Queues a song");
 		addCommand("skip", new CommandMusicSkip(), "Skips the current song");
-		addCommand("clear", new CommandMusicClearQueue(), "Clears the queue");
-		addCommand("stop", new CommandMusicStopQueue(), "Clears the queue and stops current song");
-		addCommand("shake", new CommandShake(), "Shakes");
+		addCommand("clear", new CommandMusicClear(), "Clears the queue");
+		addCommand("stop", new CommandMusicStop(), "Clears the queue and stops current song");
 		addCommand("join", new CommandMusicJoin(), "Joins the voice channel you're in");
 		addCommand("leave", new CommandMusicLeave(), "Leaves the current voice channel");
-		addCommand("now-playing", new CommandMusicNowPlaying(), "Shows the currently playing song", "np");
 		addCommand("mine", new CommandRPGMine(), "Go mining");
 		addCommand("log", new CommandRPGLog(), "Go logging");
 		addCommand("inventory", new CommandRPGInventory(), "View your inventory", "inv");
 		addCommand("craft", new CommandRPGCraft(), "Basic crafting", "crafting");
 		addCommand("give", new CommandRPGGive(), "Gives (cheats) an item");
-		addCommand("private-room", new CommandCreatePrivateRoom(), "Creates a private room");
-		addCommand("move-all-openmic", new CommandMoveAllOpenMic(), "Moves everyone with their mic on", "maom", "move-open-mic");
 		addCommand("load-players", new CommandRPGLoadPlayers(), "Loads players");
 		addCommand("save-players", new CommandRPGSavePlayers(), "Saves players");
 		addCommand("equip-item", new CommandRPGEquipItem(), "Equips an unquipped item", "equip");
 		addCommand("unequip-item", new CommandRPGUnequipItem(), "Unequipps an equipped item", "unequip");
-		addCommand("queue", new CommandMusicShowQueue(), "Show the current music queue");
 		addCommand("tile", new CommandRPGTile(), "View information of the current tile");
 		addCommand("move", new CommandRPGMove(), "Move");
+		addCommand("create", new CommandMusicCreate(), "Creates music channel");
 	}
 
 	public static Command getCommand(String name) {
+		if(commands == null) {
+			System.out.println("o w o");
+		}
 		for(Command command : commands.values()) {
 			if(command.getName().equalsIgnoreCase(name)) {
 				return command;
@@ -71,11 +70,11 @@ public final class Commands {
 		commands.put(name, command);
 	}
 
-	public static boolean canExecute(User user, Command command, boolean isAdmin) {
-		if(isAdmin || !command.requiresAdmin()) {
-			return true;
-		}
-		return false;
+	public static boolean canExecute(User user, Command command, boolean isAdmin, boolean inGuild) {
+		boolean adminCheck = isAdmin || !command.requiresAdmin();
+		boolean guildCheck = inGuild || !command.requiresGuild();
+		
+		return adminCheck && guildCheck;
 	}
 
 	public static Map<String, Command> getCommands() {

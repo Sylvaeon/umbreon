@@ -3,6 +3,8 @@ package me.sylvaeon.umbreon.rpg.world.entity;
 import me.sylvaeon.umbreon.rpg.world.Standards;
 
 public class AnimalSpecies extends Species {
+	private static final long serialVersionUID = 400L;
+	
 	boolean unique;
 	boolean canBeTamed;
 

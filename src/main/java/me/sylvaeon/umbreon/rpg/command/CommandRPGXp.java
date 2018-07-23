@@ -14,11 +14,11 @@ import java.awt.*;
 public class CommandRPGXp extends CommandRPG {
 	@Override
 	public void onCall(String[] args, User user, MessageChannel messageChannel) {
-		Player player = Players.getPlayer(user.getUser());
+		Player player = Players.getPlayer(user);
 		EmbedBuilder embedBuilder = new EmbedBuilder();
 		embedBuilder.setColor(Color.MAGENTA);
 		embedBuilder.setTitle("Skill Levels");
-		embedBuilder.setAuthor(user.getEffectiveName());
+		embedBuilder.setAuthor(user.getName());
 		embedBuilder.addField("Character Level", Utility.getProgressBar(player.getLvl(), player.getXp(), player.getXpNeeded()), false);
 		SkillSet skillSet = player.getSkillSet();
 		Skill skill;

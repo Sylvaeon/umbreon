@@ -109,7 +109,7 @@ public class World {
 
 		for (int i = 1; i < lists.size(); i++) {
 			list = lists.get(i);
-			if (((String) list.get(7)).startsWith("!")) {
+			if (((String) list.get(4)).startsWith("!")) {
 				standards = Standards.ALL();
 				standards.removeBiome(((String) list.get(4)).replaceAll("!", ""));
 				standards.removeBiome(((String) list.get(5)).replaceAll("!", ""));

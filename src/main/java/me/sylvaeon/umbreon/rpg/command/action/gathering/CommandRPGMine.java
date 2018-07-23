@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.entities.User;
 public class CommandRPGMine extends CommandRPG {
 	@Override
 	public void onCall(String[] args, User user, MessageChannel messageChannel) {
-		Player player = Players.getPlayer(user.getUser());
+		Player player = Players.getPlayer(user);
 		player.mine(messageChannel);
 	}
 }

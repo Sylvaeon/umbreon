@@ -13,6 +13,10 @@ public abstract class Command implements Comparable<Command> {
 		return false;
 	}
 	
+	public boolean requiresGuild() {
+		return false;
+	}
+	
 	public abstract void onCall(String[] args, User user, MessageChannel messageChannel);
 
 	@Override

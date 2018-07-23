@@ -80,10 +80,10 @@ public final class Utility {
 		return stringBuilder.toString();
 	}
 
-	public static String concatArray(String[] list, char c) {
+	public static String concatArray(String[] list, char delimiter) {
 		StringBuilder stringBuilder = new StringBuilder();
 		for(String s : list) {
-			stringBuilder.append(s).append(c);
+			stringBuilder.append(s).append(delimiter);
 		}
 		return stringBuilder.reverse().deleteCharAt(0).reverse().toString();
 	}

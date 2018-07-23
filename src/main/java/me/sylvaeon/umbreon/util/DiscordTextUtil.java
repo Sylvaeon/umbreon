@@ -16,19 +16,39 @@ public class DiscordTextUtil {
 	    } catch (Exception e) {}
 	}
 	
-	public static void sendMessage(String contents, MessageChannel channel) {
+	public static Message sendMessage(MessageChannel channel, String contents) {
 		try {
-			channel.sendMessage(contents).queue();
-		} catch (Exception e) {}
+			return channel.sendMessage(contents).complete();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
-	public static void editMessage(Message message, String newContents) {
+	public static Message sendMessage(MessageChannel channel, MessageEmbed contents) {
 		try {
-			message.editMessage(newContents).queue();
-		} catch (Exception e) {}
+			return channel.sendMessage(contents).complete();
+		} catch (Exception e) {
+			return null;
+		}
 	}
 	
-	public static MessageEmbed createEmbedMessage(Color color, String authorText, String authorImage, String titleText, String titleImage, List<String> fieldNames, List<String> fieldValues, List<Boolean> isFieldInline, String footerText, String footerImage) {
+	public static Message editMessage(Message message, String newContents) {
+		try {
+			return message.editMessage(newContents).complete();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static Message editMessage(Message message, MessageEmbed newContents) {
+		try {
+			return message.editMessage(newContents).complete();
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public static EmbedBuilder createEmbedMessage(Color color, String authorText, String authorImage, String titleText, String titleImage, List<String> fieldNames, List<String> fieldValues, String footerText, String footerImage) {
 		EmbedBuilder embedBuilder = new EmbedBuilder();
 		embedBuilder.setColor(color);
 		if(authorImage == null) {
@@ -42,10 +62,10 @@ public class DiscordTextUtil {
 			embedBuilder.setTitle(titleText, titleImage);
 		}
 		for(int i = 0; i < fieldNames.size(); i++) {
-			embedBuilder.addField(fieldNames.get(i), fieldValues.get(i), isFieldInline.get(i));
+			embedBuilder.addField(fieldNames.get(i), fieldValues.get(i), false);
 		}
 		embedBuilder.setFooter(footerText, footerImage);
-		return embedBuilder.build();
+		return embedBuilder;
 	}
 	
 }

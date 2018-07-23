@@ -18,7 +18,7 @@ import static me.sylvaeon.umbreon.util.Utility.formatEnum;
 public class CommandRPGTile extends CommandRPG {
 	@Override
 	public void onCall(String[] args, User user, MessageChannel messageChannel) {
-		Player player = Players.getPlayer(user.getUser());
+		Player player = Players.getPlayer(user);
 		int x = player.getXPos();
 		int y = player.getYPos();
 		final Tile tile = World.getTile(player.getXPos(), player.getYPos());
@@ -28,7 +28,7 @@ public class CommandRPGTile extends CommandRPG {
 		final Set<PlantSpecies> plants = tile.getPlants();
 		final TreeSpecies tree = tile.getTreeSpecies();
 		EmbedBuilder builder = new EmbedBuilder();
-		builder.setAuthor(user.getUser().getName() + " - x:" + x + ", y:" + y);
+		builder.setAuthor(user.getName() + " - x:" + x + ", y:" + y);
 		builder.setColor(biome.getColor());
 		if(feature != null) {
 			builder.setTitle(formatEnum(feature));

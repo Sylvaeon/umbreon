@@ -12,7 +12,6 @@ public class CommandMusicJoin extends CommandMusic {
     		GuildVoiceState voiceState = member.getVoiceState();
 		    DiscordVoiceUtil.joinVoiceChannel(guild, voiceState.getChannel());
 	    } else {
-    		messageChannel.sendMessage("Cannot find the voice chat you're in").queue();
 	    }
 	    
     }

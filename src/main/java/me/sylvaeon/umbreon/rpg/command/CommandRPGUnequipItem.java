@@ -13,7 +13,7 @@ public class CommandRPGUnequipItem extends CommandRPG {
 	@Override
 	public void onCall(String[] args, User user, MessageChannel messageChannel) {
 		try {
-			Player player = Players.getPlayer(user.getUser());
+			Player player = Players.getPlayer(user);
 			String arg = Utility.concatArray(args, ' ');
 			String[] quoteSeperated = arg.split("\"");
 			String itemName = quoteSeperated[1];

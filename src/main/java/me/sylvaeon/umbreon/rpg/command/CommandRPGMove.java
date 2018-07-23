@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.entities.User;
 public class CommandRPGMove extends CommandRPG {
 	@Override
 	public void onCall(String[] args, User user, MessageChannel messageChannel) {
-		Player player = Players.getPlayer(user.getUser());
+		Player player = Players.getPlayer(user);
 		if(args[0].equalsIgnoreCase("up")) {
 			player.addY();
 			messageChannel.sendMessage("Moved up").queue();

@@ -9,7 +9,7 @@ import net.dv8tion.jda.core.entities.User;
 public class CommandRPGLog extends CommandRPG {
 	@Override
 	public void onCall(String[] args, User user, MessageChannel messageChannel) {
-		Player player = Players.getPlayer(user.getUser());
+		Player player = Players.getPlayer(user);
 		player.log(messageChannel);
 	}
 }
