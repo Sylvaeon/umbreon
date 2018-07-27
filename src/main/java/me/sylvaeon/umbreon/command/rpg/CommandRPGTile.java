@@ -1,4 +1,4 @@
-package me.sylvaeon.umbreon.rpg.command;
+package me.sylvaeon.umbreon.command.rpg;
 
 import me.sylvaeon.umbreon.rpg.world.Tile;
 import me.sylvaeon.umbreon.rpg.world.World;

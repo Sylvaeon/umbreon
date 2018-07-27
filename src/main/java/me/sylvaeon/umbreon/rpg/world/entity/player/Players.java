@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class Players {
-	public static Map<User, Player> players;
+	public static Map<Long, Player> players;
 	
 	public static void init() {
 		players = new HashMap<>();
@@ -31,12 +31,12 @@ public class Players {
 
 	private static void putPlayer(User user, Player player) {
 		if(!user.isBot() && !user.isFake()) {
-			players.put(user, player);
+			players.put(user.getIdLong(), player);
 		}
 	}
 	
 	public static Player getPlayer(User user) {
-		return players.get(user);
+		return players.get(user.getIdLong());
 	}
 	
 	private static Collection<Player> getPlayers() {
@@ -71,8 +71,8 @@ public class Players {
 	}
 
 	public static void savePlayers() {
-		for(Map.Entry<User, Player> entry : players.entrySet()) {
-			savePlayer(entry.getKey());
+		for(Map.Entry<Long, Player> entry : players.entrySet()) {
+			savePlayer(Umbreon.getJda().getUserById(entry.getKey()));
 		}
 	}
 

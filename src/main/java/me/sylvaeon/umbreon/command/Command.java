@@ -53,4 +53,8 @@ public abstract class Command implements Comparable<Command> {
 	public void setAliases(String[] aliases) {
 		this.aliases = aliases;
 	}
+	
+	public Character getPrefix() {
+		return null;
+	}
 }

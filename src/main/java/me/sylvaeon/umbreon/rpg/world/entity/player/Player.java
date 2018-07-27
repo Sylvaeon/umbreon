@@ -30,7 +30,8 @@ public class Player extends Entity {
 	private SkillSet skillSet;
 	private int xPos, yPos;
 	private double mana, manaMax;
-
+	private int gender;
+	
 	public Player(String name) {
 		super(name);
 		this.xp = 0;
@@ -41,6 +42,7 @@ public class Player extends Entity {
 		this.manaMax = 100;
 		this.inventory = new Inventory();
         this.skillSet = new SkillSet();
+        this.gender = 2;
 	}
 
 	@Contract(pure = true)
@@ -292,7 +294,15 @@ public class Player extends Entity {
 	public double getManaMax() {
 		return manaMax;
 	}
-
+	
+	public Gender getGender() {
+		return Gender.values()[gender];
+	}
+	
+	public void setGender(Gender gender) {
+		this.gender = gender.ordinal();
+	}
+	
 	@Override
 	public int compareTo(@NotNull Entity o) {
 		if(o instanceof Player) {
@@ -301,4 +311,9 @@ public class Player extends Entity {
 			return super.compareTo(o);
 		}
 	}
+	
+	public enum Gender {
+		FEMALE, MALE, OTHER
+	}
+	
 }

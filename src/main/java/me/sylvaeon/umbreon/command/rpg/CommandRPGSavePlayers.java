@@ -1,4 +1,4 @@
-package me.sylvaeon.umbreon.rpg.command;
+package me.sylvaeon.umbreon.command.rpg;
 
 import me.sylvaeon.umbreon.rpg.world.entity.player.Players;
 import net.dv8tion.jda.core.entities.MessageChannel;

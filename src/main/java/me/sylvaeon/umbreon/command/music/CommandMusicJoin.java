@@ -1,4 +1,4 @@
-package me.sylvaeon.umbreon.music.command;
+package me.sylvaeon.umbreon.command.music;
 
 import me.sylvaeon.umbreon.util.DiscordVoiceUtil;
 import net.dv8tion.jda.core.entities.*;

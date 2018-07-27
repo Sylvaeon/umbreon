@@ -1,21 +1,15 @@
 package me.sylvaeon.umbreon.command;
 
-import me.sylvaeon.umbreon.music.command.*;
-import me.sylvaeon.umbreon.rpg.command.*;
-import me.sylvaeon.umbreon.rpg.command.action.CommandRPGCraft;
-import me.sylvaeon.umbreon.rpg.command.action.CommandRPGGive;
-import me.sylvaeon.umbreon.rpg.command.action.gathering.CommandRPGLog;
-import me.sylvaeon.umbreon.rpg.command.action.gathering.CommandRPGMine;
-import net.dv8tion.jda.core.entities.User;
-
-import java.util.Map;
-import java.util.TreeMap;
+import com.google.common.collect.HashBasedTable;
+import com.google.common.collect.Table;
+import me.sylvaeon.umbreon.command.music.*;
+import me.sylvaeon.umbreon.command.rpg.*;
 
 public final class Commands {
-	private static Map<String, Command> commands;
+	private static Table<Character, String, Command> commands;
 	
 	public static void init() {
-		commands = new TreeMap<>();
+		commands = HashBasedTable.create();
 		addCommand("help", new CommandHelp(), "Shows this list");
 		addCommand("cat", new CommandCat(), "Meow.");
 		addCommand("dog", new CommandDog(), "Bork.");
@@ -45,39 +39,19 @@ public final class Commands {
 		addCommand("create", new CommandMusicCreate(), "Creates music channel");
 	}
 
-	public static Command getCommand(String name) {
-		if(commands == null) {
-			System.out.println("o w o");
-		}
-		for(Command command : commands.values()) {
-			if(command.getName().equalsIgnoreCase(name)) {
-				return command;
-			} else {
-				for(String alias : command.getAliases()) {
-					if(alias.equalsIgnoreCase(name)) {
-						return command;
-					}
-				}
-			}
-		}
-		return null;
+	public static Command getCommand(Character prefix, String name) {
+		name = name.toLowerCase();
+		return commands.get(prefix, name);
 	}
 
 	private static void addCommand(String name, Command command, String description, String... aliases) {
 		command.setName(name);
 		command.setDescription(description);
 		command.setAliases(aliases);
-		commands.put(name, command);
+		commands.put(command.getPrefix(), name, command);
+		for(String alias : aliases) {
+			commands.put(command.getPrefix(), alias, command);
+		}
 	}
 
-	public static boolean canExecute(User user, Command command, boolean isAdmin, boolean inGuild) {
-		boolean adminCheck = isAdmin || !command.requiresAdmin();
-		boolean guildCheck = inGuild || !command.requiresGuild();
-		
-		return adminCheck && guildCheck;
-	}
-
-	public static Map<String, Command> getCommands() {
-		return commands;
-	}
 }

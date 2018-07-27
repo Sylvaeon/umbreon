@@ -1,4 +1,4 @@
-package me.sylvaeon.umbreon.rpg.command;
+package me.sylvaeon.umbreon.command.rpg;
 
 import me.sylvaeon.umbreon.rpg.item.Item;
 import me.sylvaeon.umbreon.rpg.item.Items;

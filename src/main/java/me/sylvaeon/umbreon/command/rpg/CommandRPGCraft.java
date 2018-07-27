@@ -1,6 +1,5 @@
-package me.sylvaeon.umbreon.rpg.command.action;
+package me.sylvaeon.umbreon.command.rpg;
 
-import me.sylvaeon.umbreon.rpg.command.CommandRPG;
 import me.sylvaeon.umbreon.rpg.crafting.Recipe;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Player;
 import me.sylvaeon.umbreon.rpg.world.entity.player.Players;

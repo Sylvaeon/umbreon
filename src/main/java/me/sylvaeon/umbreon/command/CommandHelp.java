@@ -1,7 +1,7 @@
 package me.sylvaeon.umbreon.command;
 
-import me.sylvaeon.umbreon.music.command.CommandMusic;
-import me.sylvaeon.umbreon.rpg.command.CommandRPG;
+import me.sylvaeon.umbreon.command.music.CommandMusic;
+import me.sylvaeon.umbreon.command.rpg.CommandRPG;
 import net.dv8tion.jda.core.EmbedBuilder;
 import net.dv8tion.jda.core.entities.MessageChannel;
 import net.dv8tion.jda.core.entities.PrivateChannel;

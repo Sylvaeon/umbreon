@@ -1,4 +1,4 @@
-package me.sylvaeon.umbreon.music.command;
+package me.sylvaeon.umbreon.command.music;
 
 import com.google.api.services.youtube.model.SearchResult;
 import me.sylvaeon.umbreon.Google;
